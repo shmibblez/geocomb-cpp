@@ -21,23 +21,32 @@ public:
    * magnitude from origin to point **/
   double mag();
   /**
-   * add to other vector **/
-  Point3 add(const Point3 &p);
+   * add another vector
+   * @note modifies obj */
+  void add(const Point3 &p);
   /**
-   * dot product **/
+   * subtract another vector
+   * @note modifies obj */
+  void subtract(const Point3 &p);
+  /**
+   * dot product */
   double dot(const Point3 &p);
   /**
    * cross product
-   * @note returns new obj, doesn't modify anything **/
-  Point3 cross(const Point3 &p);
+   * @note modifies obj **/
+  void cross(const Point3 &p);
   /**
    * convert into unit vec
    * @note modifies obj **/
-  Point3 unit();
+  void unit();
   /**
-   * scale vector (multiply by scalar)
+   * multiply by scalar
    * @note modifies obj **/
-  void scale(const double amount);
+  void mult_by(const double num);
+  /**
+   * multiply by scalar
+   * @note modifies obj **/
+  void div_by(const double num);
   /**
    * distance between vectors **/
   double distance(const Point3 &p);
@@ -50,12 +59,14 @@ public:
    * check if point is valid (all coords finite & valid numbers) **/
   bool is_valid();
   /**
-   * @returns closest point in point arr **/
+   * @returns copy of closest point in point arr */
   Point3 closest_point(std::vector<Point3> points);
 
   /**
    * NOT IMPLEMENED (list functions that haven't been implemented yet & are in
-   *hexmap js)
+   * hexmap js)
+   *
+   * pointNum(GPoint3 p)
    **/
 };
 
@@ -65,20 +76,24 @@ public:
   int res;
   int row;
   int col;
-  GPoint3(int x, int y, int z, int res, int row, int col, bool is_vert = false,
-          int tri_num = -1);
+  GPoint3(double x, double y, double z, int res, int row, int col,
+          bool is_vert = false, int tri_num = -1);
 };
 
 class Quaternion : public Point3 {
 
 public:
   int w;
-  Quaternion(int x, int y, int z, int w);
+  Quaternion(double x, double y, double z, double w);
 
-  // convert to unit quaternion
+  /**
+   * convert to unit quaternion */
   void unit();
-  // get magnitude
+  /**
+   * get quaternion magnitude */
   double mag();
-  // multiply with another quaternion
-  Quaternion multiply(const Quaternion &q);
+  /**
+   * multiply with another quaternion
+   * @note modifies obj */
+  void multiply(const Quaternion &q);
 };
