@@ -29,10 +29,7 @@ public:
    * @param lat latitude
    * @param lon longitude */
   Point3 point_from_coords(double lat, double lon);
-  /**
-   * checks if point is phex center
-   * @param res resolution */
-  bool is_phex_center(int res, int row, int col);
+  
 
   // TODO: make all methods static, and in js wrapper make
   // them instance methods (makes calling from js easier, also
