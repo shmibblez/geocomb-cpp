@@ -10,6 +10,10 @@ public:
   bool is_vert;
   Point3(int x, int y, int z, bool is_vert = false, int tri_num = -1);
 
+  /**
+   * VECTOR ARITHMETIC, NOTHING TOO SPECIAL HERE
+   **/
+
   // angle between vectors (origin, this) and (origin, p)
   double angle_between(const Point3 &p);
   /**
@@ -61,6 +65,12 @@ public:
   /**
    * @returns copy of closest point in point arr */
   Point3 closest_point(std::vector<Point3> points);
+
+  /**
+   * HEXMAP STUFF, THIS IS WHERE IT GETS INTERESTING
+   **/
+
+  // TODO: hexmap functions
 
   /**
    * NOT IMPLEMENED (list functions that haven't been implemented yet & are in

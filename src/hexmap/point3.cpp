@@ -21,22 +21,21 @@ void Quaternion::unit() {
 double Quaternion::mag() { return sqrt(x * x + y * y + z * z + w * w); }
 // multiply with another quaternion
 void Quaternion::multiply(const Quaternion &q) {
-  double aw = w;
   Point3 a(x, y, z);
   Point3 b(q.x, q.y, q.z);
   Point3 v1 = a;
   v1.cross(b);
   Point3 v2 = b;
-  b.mult_by(aw);
+  v2.mult_by(w);
   Point3 v3 = a;
-  a.mult_by(q.w);
+  v3.mult_by(q.w);
   Point3 v = v1;
   v.add(v2);
   v.add(v3);
   x = v.x;
   y = v.y;
-  z = b.z;
-  w = aw * q.w - a.dot(b);
+  z = v.z;
+  w = w * q.w - a.dot(b);
 }
 
 Point3::Point3(int x, int y, int z, bool is_vert = false, int tri_num = -1)
@@ -92,8 +91,7 @@ void Point3::subtract(const Point3 &p) {
  * dot product **/
 double Point3::dot(const Point3 &p) { return x * p.x + y * p.y + z * p.z; }
 /**
- * cross product
- * @note modifies obj **/
+ * cross product !-> modifies obj **/
 void Point3::cross(const Point3 &p) {
   x = y * p.z - p.y * z;
   y = z * p.x - p.z * x;
