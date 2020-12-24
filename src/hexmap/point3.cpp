@@ -327,6 +327,10 @@ Point3::lazy_row_points_gnomonic(const int center, const Point3 &left,
   // TODO: left off here
   // IMPORTANT: return pointers from function and delete manually? prevents
   // unecessary copying of objects (points, tris for example)
+  // OR just do this since compiler will probably do RVO (Return Value
+  // Optimization) - in other words, know that if you don't optimize by
+  // returning pointers to objects, compiler will, so don't sacrifice
+  // readability since compiler will optimize anyway
 }
 
 // TODO: when implement gnomonic point generators, make sure to call
