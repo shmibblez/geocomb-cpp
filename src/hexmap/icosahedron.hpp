@@ -29,7 +29,11 @@ public:
    * @param lat latitude
    * @param lon longitude */
   Point3 point_from_coords(double lat, double lon);
-  
+
+  // TODO: generate hash here, in js version it's in Point3, point_from_coords
+  // is also in Point3 in js version
+  std::vector<std::any> hash(Point3 p, map_orientation orientation,
+                             rotation_method rotation);
 
   // TODO: make all methods static, and in js wrapper make
   // them instance methods (makes calling from js easier, also
