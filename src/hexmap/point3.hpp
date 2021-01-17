@@ -24,7 +24,16 @@ public:
   typedef std::vector<Point3> pointsL;
   typedef std::vector<Point3> pointsR;
   typedef int lower_indx;
-  typedef std::tuple<pointsL, pointsR, lower_indx> lazy_side_points_result;
+  // typedef std::tuple<pointsL, pointsR, lower_indx> lazy_side_points_result;
+
+  struct lazy_side_points_result {
+    std::vector<Point3> pointsL;
+    std::vector<Point3> pointsR;
+    int lower_indx;
+
+    // TODO: how to save values to struct? (constructor)
+    // and if possible any way to make them const?
+  };
 
   typedef std::vector<Point3> row_points;
   typedef std::tuple<row_points, lower_indx> lazy_row_points_result;

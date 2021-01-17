@@ -7,7 +7,7 @@ Triangle::Triangle(Point3 A, Point3 B, Point3 C, pointing direction,
                    position pos, int num = -1, int toAB = -1, int toBC = -1,
                    int toCA = -1)
     : A(A), B(B), C(C), direction(direction), pos(pos), num(num), toAB(toAB),
-      toBC(toBC), toCA(toCA) {}
+      toBC(toBC), toCA(toCA){};
 
 /**
  * @param res resolution
@@ -64,19 +64,36 @@ Triangle::generate_lazy_points_around(Point3 &p, int res,
  * @param lower_horz lower horizontal index of point
  * @param rotation rotation method
  * @returns point from lower indices */
-Point3 generate_point(int res, int lower_vert, int lower_horz,
-                      rotation_method rotation) const;
+Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
+                                rotation_method rotation) const {
+  const int nd = hexmapf::num_divisions(res);
+  // kind of hacky but works
+  const Point3::lazy_side_points_result vert_result =
+      rotation_method == rotation_method::gnomonic
+          ? Point3::lazy_side_points_gnomonic(tri, lower_vert, res,
+                                              constants::lazy_range, lower_vert,
+                                              lower_vert)
+          : Point3::lazy_side_points_quaternion(tri, lower_vert, res,
+                                                constants::lazy_range,
+                                                lower_vert, lower_vert);
+  vert_result.
 
-/**
- * @param point point to test
- * @returns whether triangle contains point */
-bool contains_point(Point3 &point) const;
+  // const Point3::lazy_row_points_result hors_result =
+  //     rotation_method == rotation_method::gnomonic
+  //         ? Point3::lazy_row_points_gnomonic(lower_horz, )
+  //         : Point3::lazy_side_points_quaternion()
+};
 
-/**
- * @param vec vector from origin to point
- * @returns point where [vec] intersects with this triangle's plane */
-Point3 plane_intersection(Point3 vec) const;
+// /**
+//  * @param point point to test
+//  * @returns whether triangle contains point */
+// bool contains_point(Point3 &point) const;
 
-/**
- * @returns triangle area */
-double area() const;
+// /**
+//  * @param vec vector from origin to point
+//  * @returns point where [vec] intersects with this triangle's plane */
+// Point3 plane_intersection(Point3 vec) const;
+
+// /**
+//  * @returns triangle area */
+// double area() const;

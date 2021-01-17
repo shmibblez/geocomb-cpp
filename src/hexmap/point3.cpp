@@ -274,6 +274,7 @@ Point3::lazy_side_points_gnomonic(const Triangle &tri, const int center,
       rotated->spheriphy();
       point_arr.push_back(*rotated);
     }
+    delete rotated;
     return point_arr;
   };
 
@@ -324,37 +325,191 @@ Point3::lazy_row_points_gnomonic(const int center, const Point3 &left,
                                  const Point3 &right, int num_divisions,
                                  const int lazy_range = constants::lazy_range,
                                  int lower = -1, int upper = -1) {
-  // TODO: left off here
-  // IMPORTANT: return pointers from function and delete manually? prevents
-  // unecessary copying of objects (points, tris for example)
-  // OR just do this since compiler will probably do RVO (Return Value
-  // Optimization) - in other words, know that if you don't optimize by
-  // returning pointers to objects, compiler will, so don't sacrifice
-  // readability since compiler will optimize anyway
-}
 
-// TODO: when implement gnomonic point generators, make sure to call
-// spheriphy() on point vecs there
+  if (num_divisions <= 0) {
+    return Point3::lazy_row_points_result(std::vector<Point3>({left}), 0);
+  }
+  if (lower == -1) {
+    lower = center - lazy_range;
+  }
+  if (lower < 0) {
+    lower = 0;
+  }
+
+  if (upper == -1) {
+    upper = center + lazy_range;
+  }
+  if (upper > num_divisions) {
+    upper = num_divisions;
+  }
+
+  std::vector<Point3> point_arr;
+  const double dist = left.distance(right);
+  const double dist_unit = dist / num_divisions;
+  Point3 uLR = right;
+  uLR.subtract(left);
+  uLR.unit();
+  // add points in lazy range
+  double d;
+  Point3 *rotated = nullptr;
+  for (int c = lower; c <= upper; c++) {
+    d = dist_unit * c;
+    *rotated = uLR;
+    rotated->mult_by(d);
+    rotated->add(left);
+    rotated->spheriphy();
+    point_arr.push_back(*rotated);
+  }
+  delete rotated;
+  return Point3::lazy_row_points_result(point_arr, lower);
+}
 
 /**
  * QUATERNION POINT GENERATION
  **/
 
-static std::vector<Point3>
-all_side_points_quaternion(const Point3 &above, const Point3 &below, int res);
+std::vector<Point3> Point3::all_side_points_quaternion(const Point3 &above,
+                                                       const Point3 &below,
+                                                       int res) {
+  const double nd = hexmapf::num_divisions(res);
+  std::vector<Point3> point_arr;
+  const double angle = above.angle_between(below);
+  const double angle_unit = angle / nd;
+  Point3 axis = above;
+  axis.cross(below);
+  // add first point
+  point_arr.push_back(above);
+  // add points between
+  double ang;
+  Point3 *rotated = nullptr;
+  for (int c = 1; c < nd; c++) {
+    ang = angle_unit * c;
+    *rotated = above;
+    rotated->rotate(axis, ang);
+    point_arr.push_back(*rotated);
+  }
+  delete rotated;
+  // add last point
+  point_arr.push_back(below);
+  return point_arr;
+};
 
-static Point3::lazy_side_points_result
-lazy_side_points_quaternion(const Triangle &tri, const int center,
-                            const int res,
-                            const int lazy_range = constants::lazy_range,
-                            int lower = -1, int upper = -1);
+Point3::lazy_side_points_result Point3::lazy_side_points_quaternion(
+    const Triangle &tri, const int center, const int res,
+    const int lazy_range = constants::lazy_range, int lower = -1,
+    int upper = -1) {
+  const int nd = hexmapf::num_divisions(res);
+  if (lower == -1) {
+    lower = 0;
+  }
+  if (lower < 0) {
+    lower = 0;
+  }
 
-static std::vector<Point3> all_row_points_quaternion(const Point3 &left,
-                                                     const Point3 &right,
-                                                     int num_divisions);
+  if (upper == -1) {
+    upper = nd;
+  }
+  if (upper > nd) {
+    upper = nd;
+  }
 
-static std::vector<std::any>
-lazy_row_points_quaternion(const int center, const Point3 &left,
-                           const Point3 &right, int num_divisions,
-                           const int lazy_range = constants::lazy_range,
-                           int lower = -1, int upper = -1);
+  // generate list of points
+  const std::function generate_side_points =
+      [&nd, &lower, &upper](const Point3 top,
+                            const Point3 bot) -> std::vector<Point3> {
+    std::vector<Point3> arr;
+    const double angle = top.angle_between(bot);
+    const double angle_unit = angle / nd;
+    Point3 axis = top;
+    axis.cross(bot);
+    double ang;
+    Point3 *rotated = nullptr;
+    for (int c = lower; c <= upper; c++) {
+      ang = angle_unit * c;
+      *rotated = top;
+      rotated->rotate(axis, ang);
+      arr.push_back(*rotated);
+    }
+    delete rotated;
+    return arr;
+  };
+  // setup points
+  const Point3 topL = tri.direction == pointing::UP ? tri.A : tri.B;
+  const Point3 botL = tri.direction == pointing::UP ? tri.C : tri.A;
+  const Point3 topR = tri.direction == pointing::UP ? tri.A : tri.C;
+  const Point3 botR = tri.direction == pointing::UP ? tri.B : tri.A;
+  // generate side points
+  const std::vector<Point3> pointsL = generate_side_points(topL, botL);
+  const std::vector<Point3> pointsR = generate_side_points(topR, botR);
+
+  return Point3::lazy_side_points_result(pointsL, pointsR, lower);
+}
+
+std::vector<Point3> Point3::all_row_points_quaternion(const Point3 &left,
+                                                      const Point3 &right,
+                                                      int num_divisions) {
+  if (num_divisions <= 0) {
+    return std::vector<Point3>({left});
+  }
+  std::vector<Point3> point_arr;
+  const double angle = left.angle_between(right);
+  const double angle_unit = angle / num_divisions;
+  Point3 axis = left;
+  axis.cross(right);
+  // add first point
+  point_arr.push_back(left);
+  // add points between
+  double ang;
+  Point3 *rotated = nullptr;
+  for (int c = 1; c < num_divisions; c++) {
+    ang = angle_unit * c;
+    *rotated = left;
+    rotated->rotate(axis, ang);
+    point_arr.push_back(*rotated);
+  }
+  delete rotated;
+  // add last point
+  point_arr.push_back(right);
+  return point_arr;
+}
+
+Point3::lazy_row_points_result
+Point3::lazy_row_points_quaternion(const int center, const Point3 &left,
+                                   const Point3 &right, int num_divisions,
+                                   const int lazy_range = constants::lazy_range,
+                                   int lower = -1, int upper = -1) {
+  if (num_divisions <= 0) {
+    return Point3::lazy_row_points_result(std::vector<Point3>({left}), 0);
+  }
+
+  if (lower == -1) {
+    lower = 0;
+  }
+  if (lower < 0) {
+    lower = 0;
+  }
+
+  if (upper == -1) {
+    upper = num_divisions;
+  }
+  if (upper > num_divisions || upper < 0) {
+    upper = num_divisions;
+  }
+
+  std::vector<Point3> point_arr;
+  const double angle = left.angle_between(right);
+  const double angle_unit = angle / num_divisions;
+  Point3 axis = left;
+  axis.cross(right);
+  // add points in lazy range
+  double ang;
+  Point3 *rotated = nullptr;
+  for (int c = lower; c <= upper; c++) {
+    ang = angle_unit * c;
+    *rotated = left;
+    rotated->rotate(left, ang);
+    point_arr.push_back(*rotated);
+  }
+  delete rotated;
+  return Point3::lazy_row_points_result(point_arr, lower);
+};
