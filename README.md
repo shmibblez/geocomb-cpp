@@ -18,7 +18,7 @@ the idea is to use open-gl instead of p5js as I was doing with the typescript ve
 
 ## compatibility notes (with dart & js)
 
-# general
+### general
 
 - node:
   - will have ts wrapper that interacts with node-addon-api, and node-addon-api will call c++ chexmap
@@ -29,18 +29,18 @@ the idea is to use open-gl instead of p5js as I was doing with the typescript ve
   - c wrapper will also store icosahedron struct, and call instance methods as static functions that require an icosahedron struct to access triangles, points, etc.
   - only thing need to see now is how to store triangle & point arrays? (might be able to pass vector or array using dart pointer, but still in beta so who knows? NOTE: gonna do nodejs implimentation first, then try out creating a dart package, hopefully will support some more features, maybe even web)
 
-# js / node
+### js / node
 
 - this should be pretty easy, since can pass objects back & forth between js & c++
 
-# dart
+### dart
 
 - this will be slightly more involved:
   - need to write wrapper class for c++ in c since can only call c from dart
 
 <del>
 
-# general (all things considered)
+### general (all things considered)
 
 - should icosahedron have instance methods or only have obj with static functions that take params?
   - instance:
