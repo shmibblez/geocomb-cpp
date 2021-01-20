@@ -21,22 +21,29 @@ public:
   Point3(int x, int y, int z, bool is_vert = false, int tri_num = -1);
   ~Point3();
 
-  typedef std::vector<Point3> pointsL;
-  typedef std::vector<Point3> pointsR;
-  typedef int lower_indx;
-  // typedef std::tuple<pointsL, pointsR, lower_indx> lazy_side_points_result;
-
   struct lazy_side_points_result {
     std::vector<Point3> pointsL;
     std::vector<Point3> pointsR;
     int lower_indx;
 
+    lazy_side_points_result(std::vector<Point3> pointsL,
+                            std::vector<Point3> pointsR, int lower_indx)
+        : pointsL(pointsL), pointsR(pointsR), lower_indx(lower_indx){};
+    ~lazy_side_points_result();
+
     // TODO: how to save values to struct? (constructor)
     // and if possible any way to make them const?
+    //.
+    // CHORE: IMPORTANT need to push to main
   };
 
-  typedef std::vector<Point3> row_points;
-  typedef std::tuple<row_points, lower_indx> lazy_row_points_result;
+  struct lazy_row_points_result {
+    std::vector<Point3> row_points;
+    int lower_indx;
+    lazy_row_points_result(std::vector<Point3> row_points, int lower_indx)
+        : row_points(row_points), lower_indx(lower_indx){};
+    ~lazy_row_points_result();
+  }
 
   /**
    * VECTOR ARITHMETIC, NOTHING TOO SPECIAL HERE
@@ -45,7 +52,8 @@ public:
 
   /**
    * angle between vectors (origin, this) and (origin, p) */
-  double angle_between(const Point3 &p) const;
+  double
+  angle_between(const Point3 &p) const;
   /**
    * @param around vec to rotate around -> vec is from origin to point
    * @param rad rads to rotate
@@ -172,9 +180,6 @@ public:
                            const Point3 &right, int num_divisions,
                            const int lazy_range = constants::lazy_range,
                            int lower = -1, int upper = -1);
-
-  // TODO: when implement gnomonic point generators, make sure to call
-  // spheriphy() on point vecs there
 
   /**
    * QUATERNION POINT GENERATION

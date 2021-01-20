@@ -2,8 +2,8 @@
 #include <any>
 #include <vector>
 
-enum pointing { UP, DOWN };
-enum position { TOP, CENTER, BOT };
+enum pointing { UP, DOWN, NA };
+enum position { TOP, CENTER, BOT, NA };
 
 class Triangle {
 
@@ -18,8 +18,9 @@ public:
   int toAB;
   int toBC;
   int toCA;
-  Triangle(Point3 A, Point3 B, Point3 C, pointing direction, position pos,
-           int num = -1, int toAB = -1, int toBC = -1, int toCA = -1);
+  Triangle(Point3 A, Point3 B, Point3 C, pointing direction = pointing::NA,
+           position pos = position::NA, int num = -1, int toAB = -1,
+           int toBC = -1, int toCA = -1);
 
   /**
    * @param res resolution

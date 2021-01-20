@@ -2,7 +2,7 @@
 #include "triangle.hpp"
 #include <vector>
 
-enum hash_type { rowCol, nessted };
+enum hash_type { rowCol, nested };
 
 enum map_orientation { ECEF, dymaxion };
 
@@ -12,13 +12,6 @@ class Icosahedron {
 
 public:
   std::vector<Triangle> triangles;
-  map_orientation map;
-  rotation_method rotation;
-};
-
-class Icosahedron {
-
-public:
   map_orientation orientation;
   rotation_method rotation;
   Icosahedron(map_orientation orientation = map_orientation::ECEF,

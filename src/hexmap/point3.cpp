@@ -155,6 +155,11 @@ Point3 Point3::closest_point(std::vector<Point3> &points) const {
   return *closest;
 }
 
+void Point3::rotate_around_y(double rads) {
+  this->x = this->x * cos(rads) + this->z * sin(rads);
+  this->z = -this->x * sin(rads) + this->z * cos(rads);
+}
+
 /**
  * GNOMONIC POINT GENERATION
  **/

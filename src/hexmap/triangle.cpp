@@ -3,9 +3,10 @@
 #include "icosahedron.hpp"
 #include "point3.hpp"
 
-Triangle::Triangle(Point3 A, Point3 B, Point3 C, pointing direction,
-                   position pos, int num = -1, int toAB = -1, int toBC = -1,
-                   int toCA = -1)
+Triangle::Triangle(Point3 A, Point3 B, Point3 C,
+                   pointing direction = pointing::NA,
+                   position pos = position::NA, int num = -1, int toAB = -1,
+                   int toBC = -1, int toCA = -1)
     : A(A), B(B), C(C), direction(direction), pos(pos), num(num), toAB(toAB),
       toBC(toBC), toCA(toCA){};
 
@@ -69,31 +70,98 @@ Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
   const int nd = hexmapf::num_divisions(res);
   // kind of hacky but works
   const Point3::lazy_side_points_result vert_result =
-      rotation_method == rotation_method::gnomonic
-          ? Point3::lazy_side_points_gnomonic(tri, lower_vert, res,
+      rotation == rotation_method::gnomonic
+          ? Point3::lazy_side_points_gnomonic(*this, lower_vert, res,
                                               constants::lazy_range, lower_vert,
                                               lower_vert)
-          : Point3::lazy_side_points_quaternion(tri, lower_vert, res,
+          : Point3::lazy_side_points_quaternion(*this, lower_vert, res,
                                                 constants::lazy_range,
                                                 lower_vert, lower_vert);
-  vert_result.
 
-  // const Point3::lazy_row_points_result hors_result =
-  //     rotation_method == rotation_method::gnomonic
-  //         ? Point3::lazy_row_points_gnomonic(lower_horz, )
-  //         : Point3::lazy_side_points_quaternion()
+  const Point3 left = this->direction == pointing::UP ? vert_result.pointsL[0]
+                                                      : vert_result.pointsR[0];
+  const Point3 right = this->direction == pointing::UP ? vert_result.pointsR[0]
+                                                       : vert_result.pointsL[0];
+  const Point3::lazy_row_points_result horz_result =
+      rotation == rotation_method::gnomonic
+          ? Point3::lazy_row_points_gnomonic(lower_horz, left, right, nd,
+                                             constants::lazy_range, lower_horz,
+                                             lower_horz)
+          : Point3::lazy_row_points_quaternion(lower_horz, left, right, nd,
+                                               constants::lazy_range,
+                                               lower_horz, lower_horz);
+
+  return horz_result.row_points[0];
 };
 
-// /**
-//  * @param point point to test
-//  * @returns whether triangle contains point */
-// bool contains_point(Point3 &point) const;
+/**
+ * @param point point to test
+ * @returns whether triangle contains point */
+bool Triangle::contains_point(Point3 &point) const {
+  // vec and tri intersection point
+  const Point3 intersection = this->plane_intersection(point);
+  // check if intersection on opposite side
+  if (intersection.on_opposite_side(point)) {
+    return false;
+  }
+  // check if coords ok
+  if (!intersection.is_valid()) {
+    return false;
+  }
+  // calc tri area
+  const double tri_area = this->area();
+  // if any sub tri area is bigger than thisArea it means point outside of
+  // triangle
+  const double pAB_area = Triangle(this->A, this->B, intersection).area();
+  if (pAB_area > tri_area + 0.01) {
+    return false;
+  }
+  const double pBC_area = Triangle(intersection, this->B, this->C).area();
+  if (pBC_area > tri_area + 0.01) {
+    return false;
+  }
+  const double pCA_area = Triangle(this->A, intersection, this->C).area();
+  if (pCA_area > tri_area + 0.01) {
+    return false;
+  }
+  // round and check if equal enough
+  const double combined_area = pAB_area + pBC_area + pCA_area;
+  return hexmapf::equal_enough(tri_area, combined_area);
+};
 
-// /**
-//  * @param vec vector from origin to point
-//  * @returns point where [vec] intersects with this triangle's plane */
-// Point3 plane_intersection(Point3 vec) const;
+/**
+ * @param vec vector from origin to point
+ * @returns point where [vec] intersects with this triangle's plane */
+Point3 Triangle::plane_intersection(Point3 vec) const {
+  // x component
+  const double l = (this->A.y - this->B.y) * (this->C.z - this->B.z) -
+                   (this->A.z - this->B.z) * (this->C.y - this->B.y);
+  // y component
+  const double m = (this->A.z - this->B.z) * (this->C.x - this->B.x) -
+                   (this->A.x - this->B.x) * (this->C.z - this->B.z);
+  // z component
+  const double n = (this->A.x - this->B.x) * (this->C.y - this->B.y) -
+                   (this->C.x - this->B.x) * (this->A.y - this->B.y);
+  // finds v - variable used to find point along vector from origin to p on
+  // plane
+  const double v_numer = l * this->A.x + m * this->A.y + n * this->A.z;
+  const double v_denom = l * vec.x + m * vec.y + n * vec.z;
+  const double v = v_numer / v_denom;
+  // parametric equation for line along vec (from origin)
+  const double x = vec.x * v;
+  const double y = vec.y * v;
+  const double z = vec.z * v;
+  return Point3(x, y, z);
+};
 
-// /**
-//  * @returns triangle area */
-// double area() const;
+/**
+ * @returns triangle area */
+double Triangle::area() const {
+  Point3 AB = this->B;
+  AB.subtract(this->A);
+  Point3 BC = this->C;
+  BC.subtract(this->B);
+  Point3 temp = AB;
+  AB.cross(BC);
+  return temp.mag();
+}
