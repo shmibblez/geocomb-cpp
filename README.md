@@ -18,6 +18,17 @@ the idea is to use open-gl instead of p5js as I was doing with the typescript ve
 
 ## compatibility notes (with dart & js)
 
+# general
+
+- node:
+  - will have ts wrapper that interacts with node-addon-api, and node-addon-api will call c++ chexmap
+  - node-addon-api interface will store static icosahedron object, and ts wrapper will have icosahedron class. ts icosahedron has getters and setters, and will interact with c++ through node-addon-api static icosahedron obj and its instance methods. Triangles, Points, & their arrays can be converted from c++ with NAPI, but use with getters & setters since need to be translated
+- dart:
+  - will have dart wrapper that wraps c wrapper of c++ library
+  - dart wrapper will have static icosahedron obj, and call instance methods on it
+  - c wrapper will also store icosahedron struct, and call instance methods as static functions that require an icosahedron struct to access triangles, points, etc.
+  - only thing need to see now is how to store triangle & point arrays? (might be able to pass vector or array using dart pointer, but still in beta so who knows? NOTE: gonna do nodejs implimentation first, then try out creating a dart package, hopefully will support some more features, maybe even web)
+
 # js / node
 
 - this should be pretty easy, since can pass objects back & forth between js & c++
@@ -26,6 +37,8 @@ the idea is to use open-gl instead of p5js as I was doing with the typescript ve
 
 - this will be slightly more involved:
   - need to write wrapper class for c++ in c since can only call c from dart
+
+<del>
 
 # general (all things considered)
 
@@ -36,3 +49,5 @@ the idea is to use open-gl instead of p5js as I was doing with the typescript ve
   - static:
     - (node) no benefits really
     - (dart) easier to implement c wrapper, but not by much
+
+</del>
