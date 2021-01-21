@@ -43,7 +43,7 @@ public:
     lazy_row_points_result(std::vector<Point3> row_points, int lower_indx)
         : row_points(row_points), lower_indx(lower_indx){};
     ~lazy_row_points_result();
-  }
+  };
 
   /**
    * VECTOR ARITHMETIC, NOTHING TOO SPECIAL HERE
@@ -52,8 +52,7 @@ public:
 
   /**
    * angle between vectors (origin, this) and (origin, p) */
-  double
-  angle_between(const Point3 &p) const;
+  double angle_between(const Point3 &p) const;
   /**
    * @param around vec to rotate around -> vec is from origin to point
    * @param rad rads to rotate

@@ -134,12 +134,16 @@ Icosahedron::Icosahedron(map_orientation orientation = map_orientation::ECEF,
                                      position::BOT, 19, 18, 14, 15));
 };
 
-Point3 Icosahedron::point_from_coords(double lat, double lon){};
+Point3 Icosahedron::point_from_coords(double lat, double lon){
+    // TODO:
+};
 
 // TODO: generate hash here, in js version it's in Point3, point_from_coords
 // is also in Point3 in js version
-std::vector<std::any> Icosahedron::hash(Point3 p, map_orientation orientation,
-                                        rotation_method rotation){};
+Icosahedron::hash_properties Icosahedron::hash(Point3 p){
+    // TODO:
+    
+};
 
 // TODO: make all methods static, and in js wrapper make
 // them instance methods (makes calling from js easier, also

@@ -9,13 +9,21 @@ static const double golden_ratio = (1 + sqrt(5)) / 2;
 } // namespace constants
 
 // hexmap functions
-namespace hexmapf {
-// calculates number of divisions from resolution, always res * 3
-static int num_divisions(int resolution) { return resolution * 3; }
-// round 2 nums and check if equal enough
-static bool equal_enough(double n1, double n2) {
-  // TODO: round num here
-  throw "need to figure out how to round nums";
-}
+class hexmapf {
+public:
+  // calculates number of divisions from resolution, always res * 3
+  static int num_divisions(int resolution) { return resolution * 3; };
+  // round 2 nums and check if equal enough
+  static bool equal_enough(double n1, double n2) {
+    // TODO: round num here
+    throw "need to figure out how to round nums";
+  };
 
-} // namespace hexmapf
+  static int round_up(const int num, const int mult) {
+    // (A + B - 1) / B
+    if (num % mult == 0) {
+      return num;
+    }
+    return (trunc(num / mult) + 1) * mult;
+  };
+};
