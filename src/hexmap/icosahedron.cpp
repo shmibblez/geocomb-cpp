@@ -1,7 +1,13 @@
 #include "icosahedron.hpp"
+#include <cmath>
+#include <string>
+
+using std::cos;
+using std::sin;
 
 Icosahedron::Icosahedron(map_orientation orientation = map_orientation::ECEF,
-                         rotation_method rotation = rotation_method::gnomonic)
+                         Icosahedron::rotation_method rotation =
+                             Icosahedron::rotation_method::gnomonic)
     : orientation(orientation), rotation(rotation) {
   const double gr = constants::golden_ratio;
   const double r = constants::radius;
@@ -134,17 +140,97 @@ Icosahedron::Icosahedron(map_orientation orientation = map_orientation::ECEF,
                                      position::BOT, 19, 18, 14, 15));
 };
 
-Point3 Icosahedron::point_from_coords(double lat, double lon){
-    // TODO:
+std::string Icosahedron::map_orientation_key(map_orientation mo) {
+  return std::vector<std::string>({"e", "d"})[mo];
 };
 
-// TODO: generate hash here, in js version it's in Point3, point_from_coords
-// is also in Point3 in js version
-Icosahedron::hash_properties Icosahedron::hash(Point3 p){
-    // TODO:
-    
+std::string Icosahedron::rotation_method_key(rotation_method rm) {
+  return std::vector<std::string>({"g", "q"})[rm];
 };
 
-// TODO: make all methods static, and in js wrapper make
-// them instance methods (makes calling from js easier, also
-// don't think can export whole c++ obj to module)
+Point3 Icosahedron::point_from_coords(double lat, double lon) const {
+  if (!(lat <= 90 && lat >= 90)) {
+    throw std::invalid_argument("lat must be between -90 and 90");
+  }
+  if (!(lon <= 180 && lon >= -180)) {
+    throw std::invalid_argument("lon must be beween -180 and 180");
+  }
+  lat = hexmapf::deg_2_rad(lat);
+  lon = hexmapf::deg_2_rad(lon);
+  const double r = constants::radius;
+  const double x = r * cos(lat) * cos(lon);
+  const double y = r * cos(lat) * sin(lon);
+  const double z = r * sin(lat);
+  return Point3(x, y, z);
+};
+
+Icosahedron::hash_properties Icosahedron::hash(Point3 p, int res) {
+  Icosahedron::all_icosahedron_points lazy_points =
+      this->lazy_points_around(p, res);
+  // closest point that is also phex center
+  GPoint3 cp = p.closest_point_2d(lazy_points);
+  return Icosahedron::hash_properties{.res = res, .row = cp.row, .col = cp.col};
+};
+
+/**
+ * @param p point
+ * @param res resolution
+ * @returns lazily generated points around p
+ **/
+std::vector<std::vector<GPoint3>>
+Icosahedron::lazy_points_around(Point3 p, int res) const {
+  const Triangle tri = this->containing_triangle(p);
+  const int nd = hexmapf::num_divisions(res);
+  tri.lazy_points_around(p, res, this->rotation);
+  // points and lazy range start indexes in relation to tri.C
+  // TODO: left off here
+};
+
+/**
+ * @param p point to test
+ * @returns icosahedron triangle containing p
+ **/
+Triangle Icosahedron::containing_triangle(Point3 p) const {};
+
+/**
+ * @param hash hexmap hash in format res|row|col
+ * @returns point referenced by hash
+ **/
+GPoint3 Icosahedron::parse_hash(std::string hash) const {};
+
+/**
+ * @param res resolution
+ * @returns all icosahedron points for resolution
+ **/
+Icosahedron::all_icosahedron_points
+Icosahedron::all_points(int res = 1) const {};
+
+std::vector<Phex> Icosahedron::all_phexes(int res) {
+
+  Icosahedron::all_icosahedron_points all_points = this->all_points(res);
+  std::vector<GPoint3> centers = Phex::all_phex_centers(all_points);
+
+  std::vector<Phex> phexes;
+
+  // create phexes for each phex center point
+  for (GPoint3 c : centers) {
+    // first hex center index is -> row_num % 3
+    phexes.push_back(Phex(Phex::not_lazy_surrounding_points(all_points, c), c));
+  }
+
+  return phexes;
+};
+
+/**
+ * -!-> not lazy, generates all points & phexes
+ * @param p point
+ * @param res resolution
+ * @returns phex for res containing p
+ **/
+Phex Icosahedron::not_lazy_containing_phex(Point3 p, int res) const {};
+
+/**
+ * @param p point
+ * @returns triangle containing p
+ **/
+Triangle Icosahedron::containing_triangle(Point3 p) const {};

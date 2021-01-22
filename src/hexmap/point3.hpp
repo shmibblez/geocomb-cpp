@@ -26,11 +26,6 @@ public:
     std::vector<Point3> pointsR;
     int lower_indx;
 
-    lazy_side_points_result(std::vector<Point3> pointsL,
-                            std::vector<Point3> pointsR, int lower_indx)
-        : pointsL(pointsL), pointsR(pointsR), lower_indx(lower_indx){};
-    ~lazy_side_points_result();
-
     // TODO: how to save values to struct? (constructor)
     // and if possible any way to make them const?
     //.
@@ -104,7 +99,10 @@ public:
   bool is_valid() const;
   /**
    * @returns copy of closest point in point arr */
-  Point3 closest_point(std::vector<Point3> &points) const;
+  GPoint3 closest_point(std::vector<GPoint3> &points) const;
+  /**
+   * @returns copy of closest point in 2d point arr */
+  GPoint3 closest_point_2d(std::vector<std::vector<GPoint3>> &points_2d) const;
 
   /**
    * HEXMAP STUFF, THIS IS WHERE IT GETS INTERESTING

@@ -1,4 +1,5 @@
 #include "triangle.hpp"
+#include "calc_percent.hpp"
 #include "constants.hpp"
 #include "icosahedron.hpp"
 #include "point3.hpp"
@@ -14,7 +15,8 @@ Triangle::Triangle(Point3 A, Point3 B, Point3 C,
  * @param res resolution
  * @return 2d std::vector of triangle's points for [res] */
 std::vector<std::vector<Point3>>
-Triangle::generate_all_points(int res, rotation_method rotation) const {
+Triangle::generate_all_points(int res,
+                              Icosahedron::rotation_method rotation) const {
   // empty 2d vec
   std::vector<std::vector<Point3>> points;
 
@@ -22,21 +24,21 @@ Triangle::generate_all_points(int res, rotation_method rotation) const {
   const Point3 left_above = this->direction == pointing::UP ? A : B;
   const Point3 left_below = this->direction == pointing::UP ? C : A;
   std::vector<Point3> left_points =
-      rotation == rotation_method::gnomonic
+      rotation == Icosahedron::rotation_method::gnomonic
           ? Point3::all_side_points_gnomonic(left_above, left_below, res)
           : Point3::all_side_points_quaternion(left_above, left_below, res);
 
   const Point3 right_above = this->direction == pointing::UP ? A : C;
   const Point3 right_below = this->direction == pointing::UP ? B : A;
   std::vector<Point3> right_points =
-      rotation == rotation_method::gnomonic
+      rotation == Icosahedron::rotation_method::gnomonic
           ? Point3::all_side_points_gnomonic(right_above, right_below, res)
           : Point3::all_side_points_quaternion(right_above, right_below, res);
 
   for (int x = 0; x <= max_divisions; x++) {
     int num_divs = this->direction == pointing::UP ? x : max_divisions - x;
     std::vector<Point3> new_points =
-        rotation == rotation_method::gnomonic
+        rotation == Icosahedron::rotation_method::gnomonic
             ? Point3::all_row_points_gnomonic(left_points[x], right_points[x],
                                               num_divs)
             : Point3::all_row_points_quaternion(left_points[x], right_points[x],
@@ -45,32 +47,28 @@ Triangle::generate_all_points(int res, rotation_method rotation) const {
   }
   return points;
 }
-/**
- * @param p point to generate points arounmd
- * @param res resolution
- * @param rotation rotation method
- * @returns (std::vector vec) where
- * - vec[0] = 2d vector (rows & cols)
- * - vec[1] = starting vertical index
- * - vec[2] = starting horizontal index
- * - starting indexes are in relation to tri.C -> pointing direction
- * influences row and col num calculation */
-std::vector<std::any>
-Triangle::generate_lazy_points_around(Point3 &p, int res,
-                                      rotation_method rotation) const {}
 
-/**
- * @param res resolutiom
- * @param lower_vert lower vertical index of point
- * @param lower_horz lower horizontal index of point
- * @param rotation rotation method
- * @returns point from lower indices */
+std::vector<std::any>
+Triangle::lazy_points_around(Point3 &p, int res,
+                             Icosahedron::rotation_method rotation) const {
+
+  const int nd = hexmapf::num_divisions(res);
+  // calc side percents
+  const CalcPercent::calc_percent_result percents =
+      rotation == Icosahedron::rotation_method::gnomonic
+          ? CalcPercent::gnomonic(*this, p)
+          : CalcPercent::quaternion(*this, p);
+
+  // TODO:: IMPORTANT, then go to where left off in Icosahedron
+  // lazy_points_around
+}
+
 Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
-                                rotation_method rotation) const {
+                                Icosahedron::rotation_method rotation) const {
   const int nd = hexmapf::num_divisions(res);
   // kind of hacky but works
   const Point3::lazy_side_points_result vert_result =
-      rotation == rotation_method::gnomonic
+      rotation == Icosahedron::rotation_method::gnomonic
           ? Point3::lazy_side_points_gnomonic(*this, lower_vert, res,
                                               constants::lazy_range, lower_vert,
                                               lower_vert)
@@ -83,7 +81,7 @@ Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
   const Point3 right = this->direction == pointing::UP ? vert_result.pointsR[0]
                                                        : vert_result.pointsL[0];
   const Point3::lazy_row_points_result horz_result =
-      rotation == rotation_method::gnomonic
+      rotation == Icosahedron::rotation_method::gnomonic
           ? Point3::lazy_row_points_gnomonic(lower_horz, left, right, nd,
                                              constants::lazy_range, lower_horz,
                                              lower_horz)
@@ -94,9 +92,6 @@ Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
   return horz_result.row_points[0];
 };
 
-/**
- * @param point point to test
- * @returns whether triangle contains point */
 bool Triangle::contains_point(Point3 &point) const {
   // vec and tri intersection point
   const Point3 intersection = this->plane_intersection(point);
@@ -129,9 +124,6 @@ bool Triangle::contains_point(Point3 &point) const {
   return hexmapf::equal_enough(tri_area, combined_area);
 };
 
-/**
- * @param vec vector from origin to point
- * @returns point where [vec] intersects with this triangle's plane */
 Point3 Triangle::plane_intersection(Point3 vec) const {
   // x component
   const double l = (this->A.y - this->B.y) * (this->C.z - this->B.z) -
@@ -154,8 +146,6 @@ Point3 Triangle::plane_intersection(Point3 vec) const {
   return Point3(x, y, z);
 };
 
-/**
- * @returns triangle area */
 double Triangle::area() const {
   Point3 AB = this->B;
   AB.subtract(this->A);

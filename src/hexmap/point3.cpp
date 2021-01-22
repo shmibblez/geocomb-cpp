@@ -6,7 +6,7 @@
 
 GPoint3::GPoint3(double x, double y, double z, int res, int row, int col,
                  bool is_vert = false, int tri_num = -1)
-    : Point3::Point3(x, y, z, is_vert, tri_num), res(res), row(row), col(col) {}
+    : Point3::Point3(x, y, z, is_vert, tri_num), res(res), row(row), col(col){};
 
 Quaternion::Quaternion(double x, double y, double z, double w)
     : Point3(x, y, z), w(w) {}
@@ -141,15 +141,32 @@ bool Point3::is_valid() const {
   return std::isfinite(x) && std::isfinite(y) && std::isfinite(z);
 }
 
-Point3 Point3::closest_point(std::vector<Point3> &points) const {
-  Point3 *closest = nullptr;
+GPoint3 Point3::closest_point(std::vector<GPoint3> &points) const {
+  std::unique_ptr<GPoint3> closest;
   double smallest_distance = std::numeric_limits<double>::infinity();
   double dist = 0;
-  for (const Point3 &p : points) {
+  for (GPoint3 &p : points) {
     dist = this->distance(p);
     if (dist < smallest_distance) {
       smallest_distance = dist;
-      *closest = p;
+      closest.reset(&p);
+    }
+  }
+  return *closest;
+}
+
+GPoint3
+Point3::closest_point_2d(std::vector<std::vector<GPoint3>> &points_2d) const {
+  std::unique_ptr<GPoint3> closest;
+  double smallest_distance = std::numeric_limits<double>::infinity();
+  double dist = 0;
+  for (std::vector<GPoint3> &points : points_2d) {
+    for (GPoint3 &p : points) {
+      dist = this->distance(p);
+      if (dist < smallest_distance) {
+        smallest_distance = dist;
+        closest.reset(&p);
+      }
     }
   }
   return *closest;
@@ -290,8 +307,7 @@ Point3::lazy_side_points_gnomonic(const Triangle &tri, const int center,
   const std::vector<Point3> pointsL = generate_side_points(topL, botL);
   const std::vector<Point3> pointsR = generate_side_points(topR, botR);
 
-  const Point3::lazy_side_points_result result(pointsL, pointsR, lower);
-  return result;
+  return {.pointsL = pointsL, .pointsR = pointsR, .lower_indx = lower};
 }
 
 std::vector<Point3> Point3::all_row_points_gnomonic(const Point3 &left,
@@ -447,7 +463,7 @@ Point3::lazy_side_points_result Point3::lazy_side_points_quaternion(
   const std::vector<Point3> pointsL = generate_side_points(topL, botL);
   const std::vector<Point3> pointsR = generate_side_points(topR, botR);
 
-  return Point3::lazy_side_points_result(pointsL, pointsR, lower);
+  return {.pointsL = pointsL, .pointsR = pointsR, .lower_indx = lower};
 }
 
 std::vector<Point3> Point3::all_row_points_quaternion(const Point3 &left,

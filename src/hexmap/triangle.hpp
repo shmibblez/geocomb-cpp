@@ -5,6 +5,8 @@
 enum pointing { UP, DOWN, NA };
 enum position { TOP, CENTER, BOT, NA };
 
+class Icosahedron;
+
 class Triangle {
 
 public:
@@ -22,12 +24,14 @@ public:
            position pos = position::NA, int num = -1, int toAB = -1,
            int toBC = -1, int toCA = -1);
 
+  struct lazy_points_around_result {};
+
   /**
    * @param res resolution
    * @param rotation rotation method to generate points with
    * @return 2d std::vector of triangle's points for [res] */
   std::vector<std::vector<Point3>>
-  generate_all_points(int res, rotation_method rotation) const;
+  generate_all_points(int res, Icosahedron::rotation_method rotation) const;
   /**
    * @param p point to generate points arounmd
    * @param res resolution
@@ -39,8 +43,8 @@ public:
    * - starting indexes are in relation to tri.C -> pointing direction
    * influences row and col num calculation */
   std::vector<std::any>
-  generate_lazy_points_around(Point3 &p, int res,
-                              rotation_method rotation) const;
+  lazy_points_around(Point3 &p, int res,
+                     Icosahedron::rotation_method rotation) const;
 
   /**
    * @param res resolutiom
@@ -49,7 +53,7 @@ public:
    * @param rotation rotation method
    * @returns point from lower indices */
   Point3 generate_point(int res, int lower_vert, int lower_horz,
-                        rotation_method rotation) const;
+                        Icosahedron::rotation_method rotation) const;
 
   /**
    * @param point point to test

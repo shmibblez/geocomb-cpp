@@ -6,6 +6,8 @@ static const double radius = 200;
 // golden ratio
 // TODO: how to take sqrt?
 static const double golden_ratio = (1 + sqrt(5)) / 2;
+
+static const double PI = 3.141592653589793238463;
 } // namespace constants
 
 // hexmap functions
@@ -18,7 +20,7 @@ public:
     // TODO: round num here
     throw "need to figure out how to round nums";
   };
-
+  // rounds up to next int i think
   static int round_up(const int num, const int mult) {
     // (A + B - 1) / B
     if (num % mult == 0) {
@@ -26,4 +28,6 @@ public:
     }
     return (trunc(num / mult) + 1) * mult;
   };
+  // convert from deg to rad
+  static double deg_2_rad(double deg) { return deg * (constants::PI / 180); };
 };
