@@ -268,8 +268,14 @@ public:
           bool is_vert = false, int tri_num = -1);
 
   /**
-   * checks if point is phex center */
-  bool is_phex_center();
+   * checks if point is phex center
+   * @param res resolution
+   * @param row row
+   * @param col column
+   * @return whether point is phex center
+   **/
+  static bool is_phex_center(const int res, const int row, const int col);
+
   /**
    * generate point from coordinates
    * @param lat latitude in degrees

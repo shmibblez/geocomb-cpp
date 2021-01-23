@@ -24,7 +24,11 @@ public:
            position pos = position::NA, int num = -1, int toAB = -1,
            int toBC = -1, int toCA = -1);
 
-  struct lazy_points_around_result {};
+  struct lazy_points_around_result {
+    std::vector<std::vector<Point3>> points;
+    int start_vert;
+    int start_horz;
+  };
 
   /**
    * @param res resolution
@@ -42,7 +46,7 @@ public:
    * - vec[2] = starting horizontal index
    * - starting indexes are in relation to tri.C -> pointing direction
    * influences row and col num calculation */
-  std::vector<std::any>
+  lazy_points_around_result
   lazy_points_around(Point3 &p, int res,
                      Icosahedron::rotation_method rotation) const;
 

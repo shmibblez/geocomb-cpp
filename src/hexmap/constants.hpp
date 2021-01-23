@@ -1,3 +1,7 @@
+#include <cmath>
+
+using std::round;
+
 namespace constants {
 // for generating points around another point
 static const int lazy_range = 2;
@@ -30,4 +34,13 @@ public:
   };
   // convert from deg to rad
   static double deg_2_rad(double deg) { return deg * (constants::PI / 180); };
+  /**
+   * gets closest even number by subtracting 1 if odd
+   * @param n number
+   * @returns [closest even number, isEven]
+   */
+  static int closest_even_num(const int n) {
+    const bool is_even = n % 2 == 0;
+    return is_even ? n : n - 1;
+  };
 };

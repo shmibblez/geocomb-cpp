@@ -6,7 +6,9 @@ class CalcPercent {
 
 public:
   struct calc_percent_result {
+    // vertical percent
     double percent_CA;
+    // horizontal percent
     double percent_CB;
   };
 

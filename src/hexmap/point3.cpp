@@ -8,6 +8,31 @@ GPoint3::GPoint3(double x, double y, double z, int res, int row, int col,
                  bool is_vert = false, int tri_num = -1)
     : Point3::Point3(x, y, z, is_vert, tri_num), res(res), row(row), col(col){};
 
+bool GPoint3::is_phex_center(const int res, const int row, const int col) {
+  const int nd = hexmapf::num_divisions(res);
+  if (row == 0 || row == nd * 3) {
+    return true;
+  }
+  int new_row = -1;
+  int new_col = -1;
+  if (row > nd * 2) {
+    // if in bottom tri
+    new_row = row - nd * 2;
+    new_col = col % (nd - new_row);
+    return (new_col - (new_row % 3)) % 3 == 0;
+  } else if (row >= nd) {
+    // if in center tri
+    new_row = row;
+    new_col = col % row;
+    return (new_col - (new_row % 3)) % 3 == 0;
+  } else {
+    // if in top tri
+    new_row = row;
+    new_col = col % row;
+    return (new_col - (3 - (new_row % 3))) % 3 == 0;
+  }
+};
+
 Quaternion::Quaternion(double x, double y, double z, double w)
     : Point3(x, y, z), w(w) {}
 

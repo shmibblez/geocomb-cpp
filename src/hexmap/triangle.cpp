@@ -3,6 +3,10 @@
 #include "constants.hpp"
 #include "icosahedron.hpp"
 #include "point3.hpp"
+#include <cmath>
+#include <vector>
+
+using std::round;
 
 Triangle::Triangle(Point3 A, Point3 B, Point3 C,
                    pointing direction = pointing::NA,
@@ -11,9 +15,6 @@ Triangle::Triangle(Point3 A, Point3 B, Point3 C,
     : A(A), B(B), C(C), direction(direction), pos(pos), num(num), toAB(toAB),
       toBC(toBC), toCA(toCA){};
 
-/**
- * @param res resolution
- * @return 2d std::vector of triangle's points for [res] */
 std::vector<std::vector<Point3>>
 Triangle::generate_all_points(int res,
                               Icosahedron::rotation_method rotation) const {
@@ -48,7 +49,7 @@ Triangle::generate_all_points(int res,
   return points;
 }
 
-std::vector<std::any>
+Triangle::lazy_points_around_result
 Triangle::lazy_points_around(Point3 &p, int res,
                              Icosahedron::rotation_method rotation) const {
 
@@ -58,9 +59,54 @@ Triangle::lazy_points_around(Point3 &p, int res,
       rotation == Icosahedron::rotation_method::gnomonic
           ? CalcPercent::gnomonic(*this, p)
           : CalcPercent::quaternion(*this, p);
+  // calculate percent of intersect component from C to A
+  const int estimated_vert_center = this->direction == pointing::UP
+                                        ? round(nd - percents.percent_CA * nd)
+                                        : round(percents.percent_CA * nd);
+  // lazy calculate points
+  Point3::lazy_side_points_result side_point_result =
+      rotation == Icosahedron::rotation_method::gnomonic
+          ? Point3::lazy_side_points_gnomonic(*this, estimated_vert_center, res)
+          : Point3::lazy_side_points_quaternion(*this, estimated_vert_center,
+                                                res);
 
-  // TODO:: IMPORTANT, then go to where left off in Icosahedron
-  // lazy_points_around
+  // replaced n with i
+  // int n = 0;
+
+  std::vector<std::vector<Point3>> points;
+
+  const int estimated_horz_center = round(percents.percent_CB * nd);
+  // while vertical points exist, generate points for their rows in range
+  int lower_horz_bound;
+  // not hit or miss like js hexmap, here lazy range starts from vec[0]
+  // accompanied by indx
+  // TODO: need to test (check above comment)
+  for (int i = 0; i < side_point_result.pointsL.size(); i++) {
+    // generates points for range between left and right points along vertical
+    // triangle sides (AB an AC)
+    Point3 left = this->direction == pointing::UP
+                      ? side_point_result.pointsL[i]
+                      : side_point_result.pointsR[i];
+    Point3 right = this->direction == pointing::UP
+                       ? side_point_result.pointsR[i]
+                       : side_point_result.pointsL[i];
+    int num_div = this->direction == pointing::UP
+                      ? side_point_result.lower_indx + i
+                      : nd - (side_point_result.lower_indx + i);
+
+    Point3::lazy_row_points_result row_points_result =
+        rotation == Icosahedron::rotation_method::gnomonic
+            ? Point3::lazy_row_points_gnomonic(estimated_horz_center, left,
+                                               right, num_div)
+            : Point3::lazy_row_points_quaternion(estimated_horz_center, left,
+                                                 right, num_div);
+    points.push_back(row_points_result.row_points);
+    // better way to set lower_horz_bound? only need last value...
+    lower_horz_bound = row_points_result.lower_indx;
+  }
+  return {.points = points,
+          .start_vert = side_point_result.lower_indx,
+          .start_horz = lower_horz_bound};
 }
 
 Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
