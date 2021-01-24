@@ -13,9 +13,9 @@ struct lazy_gnomonic_sides {
 class Point3 {
 
 public:
-  int x;
-  int y;
-  int z;
+  double x;
+  double y;
+  double z;
   int tri_num;
   bool is_vert;
   Point3(int x, int y, int z, bool is_vert = false, int tri_num = -1);
@@ -265,6 +265,7 @@ public:
   int row;
   int col;
   GPoint3(double x, double y, double z, int res, int row, int col,
+          Icosahedron::map_orientation mo, Icosahedron::rotation_method rm,
           bool is_vert = false, int tri_num = -1);
 
   /**

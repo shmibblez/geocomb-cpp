@@ -34,8 +34,9 @@ public:
    * @param res resolution
    * @param rotation rotation method to generate points with
    * @return 2d std::vector of triangle's points for [res] */
-  std::vector<std::vector<Point3>>
-  generate_all_points(int res, Icosahedron::rotation_method rotation) const;
+  static std::vector<std::vector<Point3>>
+  all_points(int res, Icosahedron::map_orientation mo,
+             Icosahedron::rotation_method rm) const;
   /**
    * @param p point to generate points arounmd
    * @param res resolution

@@ -1,11 +1,14 @@
 #include "point3.hpp"
 #include "constants.hpp"
+#include "icosahedron.hpp"
 #include "triangle.hpp"
 #include <cmath>
 #include <limits>
 
 GPoint3::GPoint3(double x, double y, double z, int res, int row, int col,
-                 bool is_vert = false, int tri_num = -1)
+                 Icosahedron::map_orientation mo,
+                 Icosahedron::rotation_method rm, bool is_vert = false,
+                 int tri_num = -1)
     : Point3::Point3(x, y, z, is_vert, tri_num), res(res), row(row), col(col){};
 
 bool GPoint3::is_phex_center(const int res, const int row, const int col) {

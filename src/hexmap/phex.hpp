@@ -15,6 +15,13 @@ public:
   ~Phex();
 
   /**
+   * @param all_points all icosahedron points, for generating phexes
+   * @return vector of all icosahedron phexes
+   **/
+  static std::vector<Phex>
+  all_phexes(Icosahedron::all_icosahedron_points all_points);
+
+  /**
    * @param all_points all icosahedron points for res
    * @return vector of all phex centers
    **/

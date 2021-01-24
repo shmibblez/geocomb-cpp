@@ -11,11 +11,13 @@ public:
   enum map_orientation { ECEF, dymaxion };
   enum rotation_method { gnomonic, quaternion };
 
-  std::vector<Triangle> triangles;
-  const map_orientation orientation;
-  const rotation_method rotation;
+  const std::vector<Triangle> tris;
+  const map_orientation mo;
+  const rotation_method rm;
+  const hash_type ht;
   Icosahedron(map_orientation orientation = map_orientation::ECEF,
-              rotation_method rotation = rotation_method::gnomonic);
+              rotation_method rotation = rotation_method::gnomonic,
+              hash_type ht = hash_type::rowCol);
 
   typedef std::vector<std::vector<GPoint3>> all_icosahedron_points;
   typedef std::vector<std::vector<GPoint3>> lazy_icosahedron_points;
@@ -24,6 +26,9 @@ public:
     int res;
     int row;
     int col;
+    rotation_method rm;
+    map_orientation mo;
+    hash_type ht;
   };
 
   /**
@@ -37,6 +42,18 @@ public:
    * @returns rotation_method key for rm
    **/
   static std::string rotation_method_key(rotation_method rm);
+
+  /**
+   * generates icosahedron triangles
+   * @returns vector of icosahedron triangles
+   */
+  static std::vector<Triangle> triangles();
+
+  /**
+   * @param indx index of triangle to generate
+   * @returns icosahedron triangle at [indx]
+   **/
+  static Triangle triangle(const int indx);
 
   /**
    * generate point from coordinates (degrees)
@@ -70,7 +87,7 @@ public:
    * @param hash hexmap hash in format res|row|col
    * @returns point referenced by hash
    **/
-  GPoint3 parse_hash(std::string hash) const;
+  GPoint3 parse_hash(Icosahedron::hash_properties hash) const;
 
   /**
    * @param res resolution

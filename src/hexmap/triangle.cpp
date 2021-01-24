@@ -16,8 +16,8 @@ Triangle::Triangle(Point3 A, Point3 B, Point3 C,
       toBC(toBC), toCA(toCA){};
 
 std::vector<std::vector<Point3>>
-Triangle::generate_all_points(int res,
-                              Icosahedron::rotation_method rotation) const {
+Triangle::all_points(int res, Icosahedron::map_orientation mo,
+                     Icosahedron::rotation_method rm) const {
   // empty 2d vec
   std::vector<std::vector<Point3>> points;
 

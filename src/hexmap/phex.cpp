@@ -6,6 +6,20 @@
 Phex::Phex(std::vector<GPoint3> points, GPoint3 center)
     : points(points), center(center){};
 
+std::vector<Phex>
+Phex::all_phexes(Icosahedron::all_icosahedron_points all_points) {
+  // generate all points
+  const std::vector<GPoint3> centers = Phex::all_phex_centers(all_points);
+  // init phexes
+  std::vector<Phex> phexes;
+  // generate phexes from all points & phex centers
+  for (const GPoint3 c : centers) {
+    // first hex center index is -> row_num % 3
+    phexes.push_back(Phex(Phex::not_lazy_surrounding_points(all_points, c), c));
+  }
+  return phexes;
+};
+
 std::vector<GPoint3>
 Phex::all_phex_centers(Icosahedron::all_icosahedron_points all_points) {
   const int tri_div_count = (all_points.size() - 1) / 3;
