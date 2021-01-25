@@ -1,7 +1,4 @@
 #include "phex.hpp"
-#include "icosahedron.hpp"
-#include "point3.hpp"
-#include <vector>
 
 Phex::Phex(std::vector<GPoint3> points, GPoint3 center)
     : points(points), center(center){};
@@ -128,8 +125,7 @@ std::vector<GPoint3> Phex::not_lazy_surrounding_points(
       r_belo.reset(&all_points[p.row + 1][p.col + offset + 1]);
       l_belo.reset(&all_points[p.row + 1][p.col + offset]);
     }
-    return std::vector<GPoint3>(
-        {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo});
+    return {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo};
   } else if (p.row > tri_div && p.row < tri_div * 2) {
     // center phexes
     l_cent.reset(&all_points[p.row][left_indx]);
@@ -138,8 +134,7 @@ std::vector<GPoint3> Phex::not_lazy_surrounding_points(
     r_cent.reset(&all_points[p.row][right_indx]);
     r_belo.reset(&all_points[p.row + 1][p.col]);
     l_belo.reset(&all_points[p.row + 1][left_indx]);
-    return std::vector<GPoint3>(
-        {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo});
+    return {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo};
   } else if (p.row > tri_div * 2) {
     // bottom pent phexes
     const int offset = trunc(p.col / (tri_div * 3 - p.row));
@@ -173,8 +168,7 @@ std::vector<GPoint3> Phex::not_lazy_surrounding_points(
       r_belo.reset(&all_points[p.row + 1][r_belo_indx]);
       l_belo.reset(&all_points[p.row + 1][left_indx - offset]);
     }
-    return std::vector<GPoint3>(
-        {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo});
+    return {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo};
   } else if (p.row / tri_div == 1) {
     // top edge phexes
     const int offset_top = trunc(trunc((p.col / all_points[p.row].size()) *
@@ -188,11 +182,9 @@ std::vector<GPoint3> Phex::not_lazy_surrounding_points(
     r_belo.reset(&all_points[p.row + 1][p.col]);
     l_belo.reset(&all_points[p.row + 1][left_indx]);
     if (p.is_vert) {
-      return std::vector<GPoint3>(
-          {*l_cent, *r_abov, *r_cent, *r_belo, *l_belo});
+      return {*l_cent, *r_abov, *r_cent, *r_belo, *l_belo};
     } else {
-      return std::vector<GPoint3>(
-          {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo});
+      return {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo};
     }
   } else if (p.row / (tri_div * 2) == 1) {
     // bottom edge phexes
@@ -207,11 +199,9 @@ std::vector<GPoint3> Phex::not_lazy_surrounding_points(
     r_belo.reset(&all_points[p.row + 1][p.col - offset_top]);
     l_belo.reset(&all_points[p.row + 1][left_indx - offset_top]);
     if (p.is_vert) {
-      return std::vector<GPoint3>(
-          {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo});
+      return {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo};
     } else {
-      return std::vector<GPoint3>(
-          {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo});
+      return {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo};
     }
   }
   throw std::logic_error("this should not happen");

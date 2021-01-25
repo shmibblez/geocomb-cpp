@@ -1,24 +1,24 @@
 #include "icosahedron.hpp"
 #include "phex.hpp"
+#include "point3.hpp"
+#include "triangle.hpp"
 #include <cmath>
+#include <functional>
 #include <string>
 
 using std::cos;
 using std::sin;
 using std::trunc;
 
-Icosahedron::Icosahedron(
-    map_orientation orientation = map_orientation::ECEF,
-    Icosahedron::rotation_method rotation =
-        Icosahedron::rotation_method::gnomonic,
-    Icosahedron::hash_type ht = Icosahedron::hash_type::rowCol)
+Icosahedron::Icosahedron(ico::map_orientation orientation,
+                         ico::rotation_method rotation, ico::hash_type ht)
     : mo(orientation), rm(rotation), ht(ht), tris(Icosahedron::triangles()){};
 
-std::string Icosahedron::map_orientation_key(map_orientation mo) {
+std::string Icosahedron::map_orientation_key(ico::map_orientation mo) {
   return std::vector<std::string>({"e", "d"})[mo];
 };
 
-std::string Icosahedron::rotation_method_key(rotation_method rm) {
+std::string Icosahedron::rotation_method_key(ico::rotation_method rm) {
   return std::vector<std::string>({"g", "q"})[rm];
 };
 
@@ -27,8 +27,6 @@ std::string Icosahedron::rotation_method_key(rotation_method rm) {
  * @returns vector of icosahedron triangles
  */
 std::vector<Triangle> Icosahedron::triangles() {
-  std::vector<Triangle> tris;
-
   const double gr = constants::golden_ratio;
   const double r = constants::radius;
   const double factor = r / sqrt(gr * gr + 1);
@@ -89,75 +87,78 @@ std::vector<Triangle> Icosahedron::triangles() {
    *        \ 15/   \ 16/   \ 17/   \ 18/   \ 19/
    *         \/      \/      \/      \/      \/
    */
-  /**
-   * top pent
-   */
-  // 0
-  tris.push_back(
-      Triangle(north, top2, top1, pointing::UP, position::TOP, 0, 1, 5, 4));
-  // 1
-  tris.push_back(
-      Triangle(north, top3, top2, pointing::UP, position::TOP, 1, 2, 7, 0));
-  // 2
-  tris.push_back(
-      Triangle(north, top4, top3, pointing::UP, position::TOP, 2, 3, 9, 1));
-  // 3
-  tris.push_back(
-      Triangle(north, top5, top4, pointing::UP, position::TOP, 3, 4, 11, 2));
-  // 4
-  tris.push_back(
-      Triangle(north, top1, top5, pointing::UP, position::TOP, 4, 0, 13, 3));
-  /**
-   * center triangles
-   */
-  // 5
-  tris.push_back(Triangle(bot1, top1, top2, pointing::DOWN, position::CENTER, 5,
-                          14, 0, 16));
-  // 6
-  tris.push_back(
-      Triangle(top2, bot2, bot1, pointing::UP, position::CENTER, 6, 7, 15, 5));
-  // 7
-  tris.push_back(
-      Triangle(bot2, top2, top3, pointing::DOWN, position::CENTER, 7, 6, 1, 8));
-  // 8
-  tris.push_back(
-      Triangle(top3, bot3, bot2, pointing::UP, position::CENTER, 8, 9, 16, 7));
-  // 9
-  tris.push_back(Triangle(bot3, top3, top4, pointing::DOWN, position::CENTER, 9,
-                          8, 2, 10));
-  // 10
-  tris.push_back(Triangle(top4, bot4, bot3, pointing::UP, position::CENTER, 10,
-                          11, 17, 9));
-  // 11
-  tris.push_back(Triangle(bot4, top4, top5, pointing::DOWN, position::CENTER,
-                          11, 10, 3, 12));
-  // 12
-  tris.push_back(Triangle(top5, bot5, bot4, pointing::UP, position::CENTER, 12,
-                          13, 18, 11));
-  // 13
-  tris.push_back(Triangle(bot5, top5, top1, pointing::DOWN, position::CENTER,
-                          13, 12, 4, 14));
-  // 14
-  tris.push_back(Triangle(top1, bot1, bot5, pointing::UP, position::CENTER, 14,
-                          5, 19, 13));
-  /**
-   * bottom pent
-   */
-  // 15
-  tris.push_back(Triangle(south, bot1, bot2, pointing::DOWN, position::BOT, 15,
-                          19, 6, 16));
-  // 16
-  tris.push_back(Triangle(south, bot2, bot3, pointing::DOWN, position::BOT, 16,
-                          15, 8, 17));
-  // 17
-  tris.push_back(Triangle(south, bot3, bot4, pointing::DOWN, position::BOT, 17,
-                          16, 10, 18));
-  // 18
-  tris.push_back(Triangle(south, bot4, bot5, pointing::DOWN, position::BOT, 18,
-                          17, 12, 19));
-  // 19
-  tris.push_back(Triangle(south, bot5, bot1, pointing::DOWN, position::BOT, 19,
-                          18, 14, 15));
+  const std::vector<Triangle> tris({
+      /**
+       * top pent
+       */
+      // 0
+      Triangle(north, top2, top1, tri::pointing::UP, tri::position::TOP, 0, 1,
+               5, 4),
+      // 1
+      Triangle(north, top3, top2, tri::pointing::UP, tri::position::TOP, 1, 2,
+               7, 0),
+      // 2
+      Triangle(north, top4, top3, tri::pointing::UP, tri::position::TOP, 2, 3,
+               9, 1),
+      // 3
+      Triangle(north, top5, top4, tri::pointing::UP, tri::position::TOP, 3, 4,
+               11, 2),
+      // 4
+      Triangle(north, top1, top5, tri::pointing::UP, tri::position::TOP, 4, 0,
+               13, 3),
+      /**
+       * center triangles
+       */
+      // 5
+      Triangle(bot1, top1, top2, tri::pointing::DOWN, tri::position::CENTER, 5,
+               14, 0, 16),
+      // 6
+      Triangle(top2, bot2, bot1, tri::pointing::UP, tri::position::CENTER, 6, 7,
+               15, 5),
+      // 7
+      Triangle(bot2, top2, top3, tri::pointing::DOWN, tri::position::CENTER, 7,
+               6, 1, 8),
+      // 8
+      Triangle(top3, bot3, bot2, tri::pointing::UP, tri::position::CENTER, 8, 9,
+               16, 7),
+      // 9
+      Triangle(bot3, top3, top4, tri::pointing::DOWN, tri::position::CENTER, 9,
+               8, 2, 10),
+      // 10
+      Triangle(top4, bot4, bot3, tri::pointing::UP, tri::position::CENTER, 10,
+               11, 17, 9),
+      // 11
+      Triangle(bot4, top4, top5, tri::pointing::DOWN, tri::position::CENTER, 11,
+               10, 3, 12),
+      // 12
+      Triangle(top5, bot5, bot4, tri::pointing::UP, tri::position::CENTER, 12,
+               13, 18, 11),
+      // 13
+      Triangle(bot5, top5, top1, tri::pointing::DOWN, tri::position::CENTER, 13,
+               12, 4, 14),
+      // 14
+      Triangle(top1, bot1, bot5, tri::pointing::UP, tri::position::CENTER, 14,
+               5, 19, 13),
+      /**
+       * bottom pent
+       */
+      // 15
+      Triangle(south, bot1, bot2, tri::pointing::DOWN, tri::position::BOT, 15,
+               19, 6, 16),
+      // 16
+      Triangle(south, bot2, bot3, tri::pointing::DOWN, tri::position::BOT, 16,
+               15, 8, 17),
+      // 17
+      Triangle(south, bot3, bot4, tri::pointing::DOWN, tri::position::BOT, 17,
+               16, 10, 18),
+      // 18
+      Triangle(south, bot4, bot5, tri::pointing::DOWN, tri::position::BOT, 18,
+               17, 12, 19),
+      // 19
+      Triangle(south, bot5, bot1, tri::pointing::DOWN, tri::position::BOT, 19,
+               18, 14, 15),
+  });
+  return tris;
 };
 
 /**
@@ -167,7 +168,10 @@ std::vector<Triangle> Icosahedron::triangles() {
  * @returns icosahedron triangle at [indx]
  **/
 Triangle Icosahedron::triangle(const int indx) {
-  // TODO: how to optimize? (only create specific tri)
+  // TODO: how to optimize? (only create necessary tri)
+  // proposal: have static class that creates specific triangles (function for
+  // each triangle), but then, how to call a function? maybe then store array of
+  // lambdas and call the function at tri indx?
   if (indx < 0 || indx > 19) {
     throw std::invalid_argument("icosahedron triangle indx must be within "
                                 "range [0, 19], provided indx: " +
@@ -217,9 +221,13 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
   const int lower_horz = tri_points_around.start_horz;
   const std::vector<std::vector<Point3>> points = tri_points_around.points;
 
+  // TODO: move indexing functions to static function class instead of creating
+  // lambdas every time below
+  //.
   // index top
-  std::function index_top = [&lower_vert, &lower_horz, *this, &tri, &points,
-                             &res]() -> std::vector<std::vector<GPoint3>> {
+  const std::function index_top =
+      [&lower_vert, &lower_horz, *this, &tri, &points,
+       &res]() -> std::vector<std::vector<GPoint3>> {
     // TODO: test if works, point numbering and pushing to vecs
     std::vector<std::vector<GPoint3>> indexed_points;
     const int row_off = lower_vert;
@@ -241,9 +249,9 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
     return indexed_points;
   };
   // index center up
-  std::function index_cen_up = [&nd, &lower_vert, &lower_horz, *this, &points,
-                                &res,
-                                &tri]() -> std::vector<std::vector<GPoint3>> {
+  const std::function index_cen_up =
+      [&nd, &lower_vert, &lower_horz, *this, &points, &res,
+       &tri]() -> std::vector<std::vector<GPoint3>> {
     std::vector<std::vector<GPoint3>> indexed_points;
     const int num_tris_before = hexmapf::closest_even_num(tri.num - 5);
     const int row_off = nd + lower_vert;
@@ -318,18 +326,23 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
   // no more functions, now determine which one to use
   std::vector<std::vector<GPoint3>> lazy_points;
   switch (tri.pos) {
-  case position::TOP: {
+  case tri::position::TOP: {
     lazy_points = index_top();
     break;
   }
-  case position::CENTER: {
+  case tri::position::CENTER: {
     lazy_points =
-        tri.direction == pointing::UP ? index_cen_up() : index_cen_dn();
+        tri.direction == tri::pointing::UP ? index_cen_up() : index_cen_dn();
     break;
   }
-  case position::BOT: {
+  case tri::position::BOT: {
     lazy_points = index_bot();
     break;
+  }
+  case tri::position::NA: {
+    throw std::logic_error(
+        "Icosahedron::lazy_points_around failed -> tri from icosahedron->tris "
+        "didn't have pos for some reason, this should never happen");
   }
   }
 
@@ -417,29 +430,33 @@ GPoint3 Icosahedron::parse_hash(Icosahedron::hash_properties hash) const {
 /**
  * TODO: need to test, have funny feeling won't work
  **/
-Icosahedron::all_icosahedron_points Icosahedron::all_points(int res = 1) const {
+Icosahedron::all_icosahedron_points Icosahedron::all_points(int res) const {
   Icosahedron::all_icosahedron_points points;
   const int offset_amount = res * 3;
   for (const Triangle t : this->tris) {
     int offset;
     int range;
-    std::vector<std::vector<Point3>> ps =
-        Triangle::all_points(res, this->mo, this->rm);
+    std::vector<std::vector<Point3>> ps = t.all_points(res, this->mo, this->rm);
     switch (t.pos) {
-    case position::TOP: {
+    case tri::position::TOP: {
       offset = 0;
       range = ps.size() - 1;
       break;
     }
-    case position::CENTER: {
+    case tri::position::CENTER: {
       offset = offset_amount;
       range = ps.size() - 1;
       break;
     }
-    case position::BOT: {
+    case tri::position::BOT: {
       offset = offset_amount * 2;
       range = ps.size();
       break;
+    }
+    case tri::position::NA: {
+      throw std::logic_error(
+          "Icosahedron::all_points failed -> tri from icosahedron->tris didn't "
+          "have pos for some reason, this should never happen");
     }
     };
     for (int fl = 0; fl < range; fl++) {

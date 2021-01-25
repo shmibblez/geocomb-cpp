@@ -11,6 +11,7 @@ the idea is to use open-gl instead of p5js as I was doing with the typescript ve
 - /src/draw/ contains all code needed to draw hexagons, points, vectors, etc
 - /tests/ contains multiple programs (each with with their own main()) that each do different things. For example, /tests/draw_test.cpp draws components to make sure /src/hexmap functions are working properly and accurately. I'm also thinking about making a test that generates a couple hundred hashes from random points to see if anything crashes, and another test for each icosahedron triangle that tests key points; if each one generates a proper hash point (position is good, it's accurate), it should work for all points (here multiple resolutions would be tested, but if it works for the first 50 or so it should work for all of them up to the point where rounding error and number resolution (int, double) becomes a problem).
 - that's pretty much it for now, this should be up and running in a couple time periods, depends on how long it takes me to learn some open-gl.
+- icosahedron.hpp includes all necessary libraries, and all other classes include only icosahedron.hpp
 
 ## important notes
 

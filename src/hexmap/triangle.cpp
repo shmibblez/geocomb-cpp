@@ -1,45 +1,38 @@
 #include "triangle.hpp"
-#include "calc_percent.hpp"
-#include "constants.hpp"
-#include "icosahedron.hpp"
-#include "point3.hpp"
-#include <cmath>
-#include <vector>
+#include "enums.hpp"
 
 using std::round;
 
-Triangle::Triangle(Point3 A, Point3 B, Point3 C,
-                   pointing direction = pointing::NA,
-                   position pos = position::NA, int num = -1, int toAB = -1,
-                   int toBC = -1, int toCA = -1)
+Triangle::Triangle(Point3 A, Point3 B, Point3 C, tri::pointing direction,
+                   tri::position pos, int num, int toAB, int toBC, int toCA)
     : A(A), B(B), C(C), direction(direction), pos(pos), num(num), toAB(toAB),
       toBC(toBC), toCA(toCA){};
 
 std::vector<std::vector<Point3>>
-Triangle::all_points(int res, Icosahedron::map_orientation mo,
-                     Icosahedron::rotation_method rm) const {
+Triangle::all_points(int res, ico::map_orientation mo,
+                     ico::rotation_method rm) const {
   // empty 2d vec
   std::vector<std::vector<Point3>> points;
 
   const int max_divisions = hexmapf::num_divisions(res);
-  const Point3 left_above = this->direction == pointing::UP ? A : B;
-  const Point3 left_below = this->direction == pointing::UP ? C : A;
+  const Point3 left_above = this->direction == tri::pointing::UP ? A : B;
+  const Point3 left_below = this->direction == tri::pointing::UP ? C : A;
   std::vector<Point3> left_points =
-      rotation == Icosahedron::rotation_method::gnomonic
+      rm == ico::rotation_method::gnomonic
           ? Point3::all_side_points_gnomonic(left_above, left_below, res)
           : Point3::all_side_points_quaternion(left_above, left_below, res);
 
-  const Point3 right_above = this->direction == pointing::UP ? A : C;
-  const Point3 right_below = this->direction == pointing::UP ? B : A;
+  const Point3 right_above = this->direction == tri::pointing::UP ? A : C;
+  const Point3 right_below = this->direction == tri::pointing::UP ? B : A;
   std::vector<Point3> right_points =
-      rotation == Icosahedron::rotation_method::gnomonic
+      rm == ico::rotation_method::gnomonic
           ? Point3::all_side_points_gnomonic(right_above, right_below, res)
           : Point3::all_side_points_quaternion(right_above, right_below, res);
 
   for (int x = 0; x <= max_divisions; x++) {
-    int num_divs = this->direction == pointing::UP ? x : max_divisions - x;
+    int num_divs = this->direction == tri::pointing::UP ? x : max_divisions - x;
     std::vector<Point3> new_points =
-        rotation == Icosahedron::rotation_method::gnomonic
+        rm == ico::rotation_method::gnomonic
             ? Point3::all_row_points_gnomonic(left_points[x], right_points[x],
                                               num_divs)
             : Point3::all_row_points_quaternion(left_points[x], right_points[x],
@@ -51,21 +44,21 @@ Triangle::all_points(int res, Icosahedron::map_orientation mo,
 
 Triangle::lazy_points_around_result
 Triangle::lazy_points_around(Point3 &p, int res,
-                             Icosahedron::rotation_method rotation) const {
+                             ico::rotation_method rotation) const {
 
   const int nd = hexmapf::num_divisions(res);
   // calc side percents
   const CalcPercent::calc_percent_result percents =
-      rotation == Icosahedron::rotation_method::gnomonic
+      rotation == ico::rotation_method::gnomonic
           ? CalcPercent::gnomonic(*this, p)
           : CalcPercent::quaternion(*this, p);
   // calculate percent of intersect component from C to A
-  const int estimated_vert_center = this->direction == pointing::UP
+  const int estimated_vert_center = this->direction == tri::pointing::UP
                                         ? round(nd - percents.percent_CA * nd)
                                         : round(percents.percent_CA * nd);
   // lazy calculate points
   Point3::lazy_side_points_result side_point_result =
-      rotation == Icosahedron::rotation_method::gnomonic
+      rotation == ico::rotation_method::gnomonic
           ? Point3::lazy_side_points_gnomonic(*this, estimated_vert_center, res)
           : Point3::lazy_side_points_quaternion(*this, estimated_vert_center,
                                                 res);
@@ -84,18 +77,18 @@ Triangle::lazy_points_around(Point3 &p, int res,
   for (int i = 0; i < side_point_result.pointsL.size(); i++) {
     // generates points for range between left and right points along vertical
     // triangle sides (AB an AC)
-    Point3 left = this->direction == pointing::UP
+    Point3 left = this->direction == tri::pointing::UP
                       ? side_point_result.pointsL[i]
                       : side_point_result.pointsR[i];
-    Point3 right = this->direction == pointing::UP
+    Point3 right = this->direction == tri::pointing::UP
                        ? side_point_result.pointsR[i]
                        : side_point_result.pointsL[i];
-    int num_div = this->direction == pointing::UP
+    int num_div = this->direction == tri::pointing::UP
                       ? side_point_result.lower_indx + i
                       : nd - (side_point_result.lower_indx + i);
 
     Point3::lazy_row_points_result row_points_result =
-        rotation == Icosahedron::rotation_method::gnomonic
+        rotation == ico::rotation_method::gnomonic
             ? Point3::lazy_row_points_gnomonic(estimated_horz_center, left,
                                                right, num_div)
             : Point3::lazy_row_points_quaternion(estimated_horz_center, left,
@@ -110,11 +103,11 @@ Triangle::lazy_points_around(Point3 &p, int res,
 }
 
 Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
-                                Icosahedron::rotation_method rotation) const {
+                                ico::rotation_method rotation) const {
   const int nd = hexmapf::num_divisions(res);
   // kind of hacky but works
-  const Point3::lazy_side_points_result vert_result =
-      rotation == Icosahedron::rotation_method::gnomonic
+  Point3::lazy_side_points_result vert_result =
+      rotation == ico::rotation_method::gnomonic
           ? Point3::lazy_side_points_gnomonic(*this, lower_vert, res,
                                               constants::lazy_range, lower_vert,
                                               lower_vert)
@@ -122,12 +115,14 @@ Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
                                                 constants::lazy_range,
                                                 lower_vert, lower_vert);
 
-  const Point3 left = this->direction == pointing::UP ? vert_result.pointsL[0]
-                                                      : vert_result.pointsR[0];
-  const Point3 right = this->direction == pointing::UP ? vert_result.pointsR[0]
-                                                       : vert_result.pointsL[0];
+  const Point3 left = this->direction == tri::pointing::UP
+                          ? vert_result.pointsL[0]
+                          : vert_result.pointsR[0];
+  const Point3 right = this->direction == tri::pointing::UP
+                           ? vert_result.pointsR[0]
+                           : vert_result.pointsL[0];
   const Point3::lazy_row_points_result horz_result =
-      rotation == Icosahedron::rotation_method::gnomonic
+      rotation == ico::rotation_method::gnomonic
           ? Point3::lazy_row_points_gnomonic(lower_horz, left, right, nd,
                                              constants::lazy_range, lower_horz,
                                              lower_horz)

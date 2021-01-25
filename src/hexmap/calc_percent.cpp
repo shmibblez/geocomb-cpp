@@ -1,4 +1,5 @@
 #include "calc_percent.hpp"
+#include "triangle.hpp"
 #include <cmath>
 
 using std::cos;

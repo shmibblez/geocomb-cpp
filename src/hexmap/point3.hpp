@@ -1,14 +1,15 @@
+#ifndef POINT3_HPP
+#define POINT3_HPP
+
 #include "constants.hpp"
+#include "enums.hpp"
+#include "icosahedron.hpp"
+#include <cmath>
+#include <limits>
 #include <vector>
 
-// from "triangle.hpp"
 class Triangle;
-
-struct lazy_gnomonic_sides {
-  std::vector<Point3> pointsL;
-  std::vector<Point3> pointsR;
-  int lower;
-};
+class GPoint3;
 
 class Point3 {
 
@@ -265,7 +266,7 @@ public:
   int row;
   int col;
   GPoint3(double x, double y, double z, int res, int row, int col,
-          Icosahedron::map_orientation mo, Icosahedron::rotation_method rm,
+          ico::map_orientation mo, ico::rotation_method rm,
           bool is_vert = false, int tri_num = -1);
 
   /**
@@ -301,3 +302,5 @@ public:
    * @note modifies obj */
   void multiply(const Quaternion &q);
 };
+
+#endif

@@ -1,9 +1,10 @@
-#include "constants.hpp"
+#ifndef PHEX_HPP
+#define PHEX_HPP
+
+#include "icosahedron.hpp"
+#include "phex.hpp"
 #include "point3.hpp"
 #include <vector>
-
-// from "icosahedron.hpp"
-class Icosahedron;
 
 class Phex {
 
@@ -37,3 +38,5 @@ public:
   not_lazy_surrounding_points(Icosahedron::all_icosahedron_points all_points,
                               GPoint3 p);
 };
+
+#endif

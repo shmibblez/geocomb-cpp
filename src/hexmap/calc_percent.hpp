@@ -1,6 +1,10 @@
-#include "constants.hpp"
+#ifndef CALC_PERCENT_HPP
+#define CALC_PERCENT_HPP
+
+#include "icosahedron.hpp"
 #include "point3.hpp"
-#include "triangle.hpp"
+
+class Triangle;
 
 class CalcPercent {
 
@@ -43,3 +47,5 @@ public:
   static vec_side_components_result vec_side_components(const Triangle &tri,
                                                         const Point3 &i);
 };
+
+#endif

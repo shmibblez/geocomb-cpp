@@ -1,15 +1,13 @@
 #include "point3.hpp"
-#include "constants.hpp"
-#include "icosahedron.hpp"
 #include "triangle.hpp"
-#include <cmath>
-#include <limits>
+#include <functional>
+
+using std::sqrt;
 
 GPoint3::GPoint3(double x, double y, double z, int res, int row, int col,
-                 Icosahedron::map_orientation mo,
-                 Icosahedron::rotation_method rm, bool is_vert = false,
-                 int tri_num = -1)
-    : Point3::Point3(x, y, z, is_vert, tri_num), res(res), row(row), col(col){};
+                 ico::map_orientation mo, ico::rotation_method rm, bool is_vert,
+                 int tri_num)
+    : Point3::Point3(x, y, z, is_vert, tri_num), res(res), row(row), col(col) {}
 
 bool GPoint3::is_phex_center(const int res, const int row, const int col) {
   const int nd = hexmapf::num_divisions(res);
@@ -34,7 +32,7 @@ bool GPoint3::is_phex_center(const int res, const int row, const int col) {
     new_col = col % row;
     return (new_col - (3 - (new_row % 3))) % 3 == 0;
   }
-};
+}
 
 Quaternion::Quaternion(double x, double y, double z, double w)
     : Point3(x, y, z), w(w) {}
@@ -67,7 +65,7 @@ void Quaternion::multiply(const Quaternion &q) {
   w = w * q.w - a.dot(b);
 }
 
-Point3::Point3(int x, int y, int z, bool is_vert = false, int tri_num = -1)
+Point3::Point3(int x, int y, int z, bool is_vert, int tri_num)
     : x(x), y(y), z(z), is_vert(is_vert), tri_num(tri_num) {}
 
 double Point3::angle_between(const Point3 &p) const {
@@ -112,8 +110,7 @@ void Point3::subtract(const Point3 &p) {
   y -= p.y;
   z -= p.z;
 }
-/**
- * dot product **/
+
 double Point3::dot(const Point3 &p) const {
   return x * p.x + y * p.y + z * p.z;
 }
@@ -177,7 +174,8 @@ GPoint3 Point3::closest_point(std::vector<GPoint3> &points) const {
     dist = this->distance(p);
     if (dist < smallest_distance) {
       smallest_distance = dist;
-      closest.reset(&p);
+      // closest.reset(&p);
+      *closest = p;
     }
   }
   return *closest;
@@ -193,7 +191,8 @@ Point3::closest_point_2d(std::vector<std::vector<GPoint3>> &points_2d) const {
       dist = this->distance(p);
       if (dist < smallest_distance) {
         smallest_distance = dist;
-        closest.reset(&p);
+        // closest.reset(&p);
+        *closest = p;
       }
     }
   }
@@ -247,10 +246,11 @@ std::vector<Point3> Point3::all_side_points_gnomonic(const Point3 &above,
   // TODO: local vars are cached, value at pointer might actually take longer to
   // get -> test speed of this vs creating new instances/vars for each iteration
   double d;
-  Point3 *rotated = nullptr;
+  std::unique_ptr<Point3> rotated;
   for (int i = 1; i < nd; i++) {
     d = dist_unit * i;
     // set pointer's value
+    // rotated.reset(&uAB);
     *rotated = uAB;
     rotated->mult_by(d);
     rotated->add(A);
@@ -259,7 +259,6 @@ std::vector<Point3> Point3::all_side_points_gnomonic(const Point3 &above,
     rotated->spheriphy();
     point_arr.push_back(*rotated);
   }
-  delete rotated;
   // add last point
   point_arr.push_back(B);
   return point_arr;
@@ -267,9 +266,8 @@ std::vector<Point3> Point3::all_side_points_gnomonic(const Point3 &above,
 
 Point3::lazy_side_points_result
 Point3::lazy_side_points_gnomonic(const Triangle &tri, const int center,
-                                  const int res,
-                                  const int lazy_range = constants::lazy_range,
-                                  int lower = -1, int upper = -1) {
+                                  const int res, const int lazy_range,
+                                  int lower, int upper) {
   const int nd = hexmapf::num_divisions(res);
   if (lower == -1) {
     lower = center - lazy_range;
@@ -313,9 +311,10 @@ Point3::lazy_side_points_gnomonic(const Triangle &tri, const int center,
     const double dist_unit = dist / nd;
 
     double d;
-    Point3 *rotated = nullptr;
+    std::unique_ptr<Point3> rotated;
     for (int c = lower; c <= upper; c++) {
       d = dist_unit * c;
+      // rotated.reset(&uAB);
       *rotated = uAB;
       rotated->mult_by(d);
       rotated->add(A);
@@ -324,14 +323,13 @@ Point3::lazy_side_points_gnomonic(const Triangle &tri, const int center,
       rotated->spheriphy();
       point_arr.push_back(*rotated);
     }
-    delete rotated;
     return point_arr;
   };
 
-  const Point3 topL = tri.direction == pointing::UP ? tri.A : tri.B;
-  const Point3 botL = tri.direction == pointing::UP ? tri.C : tri.A;
-  const Point3 topR = tri.direction == pointing::UP ? tri.A : tri.C;
-  const Point3 botR = tri.direction == pointing::UP ? tri.B : tri.A;
+  const Point3 topL = tri.direction == tri::pointing::UP ? tri.A : tri.B;
+  const Point3 botL = tri.direction == tri::pointing::UP ? tri.C : tri.A;
+  const Point3 topR = tri.direction == tri::pointing::UP ? tri.A : tri.C;
+  const Point3 botR = tri.direction == tri::pointing::UP ? tri.B : tri.A;
   const std::vector<Point3> pointsL = generate_side_points(topL, botL);
   const std::vector<Point3> pointsR = generate_side_points(topR, botR);
 
@@ -354,16 +352,16 @@ std::vector<Point3> Point3::all_row_points_gnomonic(const Point3 &left,
   points.push_back(left);
   // add points between
   double d;
-  Point3 *rotated = nullptr;
+  std::unique_ptr<Point3> rotated;
   for (int c = 1; c < num_divisions; c++) {
     d = dist_unit * c;
+    // rotated.reset(&uLR);
     *rotated = uLR;
     rotated->mult_by(d);
     rotated->add(left);
     rotated->spheriphy();
     points.push_back(*rotated);
   }
-  delete rotated;
   // add last point
   points.push_back(right);
   return points;
@@ -372,8 +370,7 @@ std::vector<Point3> Point3::all_row_points_gnomonic(const Point3 &left,
 Point3::lazy_row_points_result
 Point3::lazy_row_points_gnomonic(const int center, const Point3 &left,
                                  const Point3 &right, int num_divisions,
-                                 const int lazy_range = constants::lazy_range,
-                                 int lower = -1, int upper = -1) {
+                                 const int lazy_range, int lower, int upper) {
 
   if (num_divisions <= 0) {
     return Point3::lazy_row_points_result(std::vector<Point3>({left}), 0);
@@ -400,16 +397,16 @@ Point3::lazy_row_points_gnomonic(const int center, const Point3 &left,
   uLR.unit();
   // add points in lazy range
   double d;
-  Point3 *rotated = nullptr;
+  std::unique_ptr<Point3> rotated;
   for (int c = lower; c <= upper; c++) {
     d = dist_unit * c;
+    // rotated.reset(&uLR);
     *rotated = uLR;
     rotated->mult_by(d);
     rotated->add(left);
     rotated->spheriphy();
     point_arr.push_back(*rotated);
   }
-  delete rotated;
   return Point3::lazy_row_points_result(point_arr, lower);
 }
 
@@ -430,23 +427,23 @@ std::vector<Point3> Point3::all_side_points_quaternion(const Point3 &above,
   point_arr.push_back(above);
   // add points between
   double ang;
-  Point3 *rotated = nullptr;
+  std::unique_ptr<Point3> rotated;
   for (int c = 1; c < nd; c++) {
     ang = angle_unit * c;
+    // Point3 above_copy = above;
     *rotated = above;
     rotated->rotate(axis, ang);
     point_arr.push_back(*rotated);
   }
-  delete rotated;
   // add last point
   point_arr.push_back(below);
   return point_arr;
 };
 
-Point3::lazy_side_points_result Point3::lazy_side_points_quaternion(
-    const Triangle &tri, const int center, const int res,
-    const int lazy_range = constants::lazy_range, int lower = -1,
-    int upper = -1) {
+Point3::lazy_side_points_result
+Point3::lazy_side_points_quaternion(const Triangle &tri, const int center,
+                                    const int res, const int lazy_range,
+                                    int lower, int upper) {
   const int nd = hexmapf::num_divisions(res);
   if (lower == -1) {
     lower = 0;
@@ -472,21 +469,20 @@ Point3::lazy_side_points_result Point3::lazy_side_points_quaternion(
     Point3 axis = top;
     axis.cross(bot);
     double ang;
-    Point3 *rotated = nullptr;
+    std::unique_ptr<Point3> rotated;
     for (int c = lower; c <= upper; c++) {
       ang = angle_unit * c;
       *rotated = top;
       rotated->rotate(axis, ang);
       arr.push_back(*rotated);
     }
-    delete rotated;
     return arr;
   };
   // setup points
-  const Point3 topL = tri.direction == pointing::UP ? tri.A : tri.B;
-  const Point3 botL = tri.direction == pointing::UP ? tri.C : tri.A;
-  const Point3 topR = tri.direction == pointing::UP ? tri.A : tri.C;
-  const Point3 botR = tri.direction == pointing::UP ? tri.B : tri.A;
+  const Point3 topL = tri.direction == tri::pointing::UP ? tri.A : tri.B;
+  const Point3 botL = tri.direction == tri::pointing::UP ? tri.C : tri.A;
+  const Point3 topR = tri.direction == tri::pointing::UP ? tri.A : tri.C;
+  const Point3 botR = tri.direction == tri::pointing::UP ? tri.B : tri.A;
   // generate side points
   const std::vector<Point3> pointsL = generate_side_points(topL, botL);
   const std::vector<Point3> pointsR = generate_side_points(topR, botR);
@@ -525,8 +521,7 @@ std::vector<Point3> Point3::all_row_points_quaternion(const Point3 &left,
 Point3::lazy_row_points_result
 Point3::lazy_row_points_quaternion(const int center, const Point3 &left,
                                    const Point3 &right, int num_divisions,
-                                   const int lazy_range = constants::lazy_range,
-                                   int lower = -1, int upper = -1) {
+                                   const int lazy_range, int lower, int upper) {
   if (num_divisions <= 0) {
     return Point3::lazy_row_points_result(std::vector<Point3>({left}), 0);
   }
@@ -552,13 +547,12 @@ Point3::lazy_row_points_quaternion(const int center, const Point3 &left,
   axis.cross(right);
   // add points in lazy range
   double ang;
-  Point3 *rotated = nullptr;
+  std::unique_ptr<Point3> rotated;
   for (int c = lower; c <= upper; c++) {
     ang = angle_unit * c;
     *rotated = left;
     rotated->rotate(left, ang);
     point_arr.push_back(*rotated);
   }
-  delete rotated;
   return Point3::lazy_row_points_result(point_arr, lower);
 };

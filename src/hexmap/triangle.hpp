@@ -1,11 +1,13 @@
+#ifndef TRIANGLE_HPP
+#define TRIANGLE_HPP
+
+#include "calc_percent.hpp"
+#include "enums.hpp"
+#include "icosahedron.hpp"
 #include "point3.hpp"
 #include <any>
+#include <cmath>
 #include <vector>
-
-enum pointing { UP, DOWN, NA };
-enum position { TOP, CENTER, BOT, NA };
-
-class Icosahedron;
 
 class Triangle {
 
@@ -13,15 +15,16 @@ public:
   Point3 A;
   Point3 B;
   Point3 C;
-  pointing direction;
-  position pos;
+  tri::pointing direction;
+  tri::position pos;
   int num;
   // triangle number next to this one (shares side)
   int toAB;
   int toBC;
   int toCA;
-  Triangle(Point3 A, Point3 B, Point3 C, pointing direction = pointing::NA,
-           position pos = position::NA, int num = -1, int toAB = -1,
+  Triangle(Point3 A, Point3 B, Point3 C,
+           tri::pointing direction = tri::pointing::NA,
+           tri::position pos = tri::position::NA, int num = -1, int toAB = -1,
            int toBC = -1, int toCA = -1);
 
   struct lazy_points_around_result {
@@ -34,9 +37,8 @@ public:
    * @param res resolution
    * @param rotation rotation method to generate points with
    * @return 2d std::vector of triangle's points for [res] */
-  static std::vector<std::vector<Point3>>
-  all_points(int res, Icosahedron::map_orientation mo,
-             Icosahedron::rotation_method rm) const;
+  std::vector<std::vector<Point3>> all_points(int res, ico::map_orientation mo,
+                                              ico::rotation_method rm) const;
   /**
    * @param p point to generate points arounmd
    * @param res resolution
@@ -48,8 +50,7 @@ public:
    * - starting indexes are in relation to tri.C -> pointing direction
    * influences row and col num calculation */
   lazy_points_around_result
-  lazy_points_around(Point3 &p, int res,
-                     Icosahedron::rotation_method rotation) const;
+  lazy_points_around(Point3 &p, int res, ico::rotation_method rotation) const;
 
   /**
    * @param res resolutiom
@@ -58,7 +59,7 @@ public:
    * @param rotation rotation method
    * @returns point from lower indices */
   Point3 generate_point(int res, int lower_vert, int lower_horz,
-                        Icosahedron::rotation_method rotation) const;
+                        ico::rotation_method rotation) const;
 
   /**
    * @param point point to test
@@ -75,3 +76,5 @@ private:
    * @returns triangle area */
   double area() const;
 };
+
+#endif

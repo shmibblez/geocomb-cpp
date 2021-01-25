@@ -1,23 +1,25 @@
-#include "phex.hpp"
-#include "point3.hpp"
-#include "triangle.hpp"
+#ifndef ICOSAHEDRON_HPP
+#define ICOSAHEDRON_HPP
+
+#include "enums.hpp"
 #include <map>
 #include <vector>
+
+class Triangle;
+class Point3;
+class GPoint3;
+class Phex;
 
 class Icosahedron {
 
 public:
-  enum hash_type { rowCol, nested };
-  enum map_orientation { ECEF, dymaxion };
-  enum rotation_method { gnomonic, quaternion };
-
   const std::vector<Triangle> tris;
-  const map_orientation mo;
-  const rotation_method rm;
-  const hash_type ht;
-  Icosahedron(map_orientation orientation = map_orientation::ECEF,
-              rotation_method rotation = rotation_method::gnomonic,
-              hash_type ht = hash_type::rowCol);
+  const ico::map_orientation mo;
+  const ico::rotation_method rm;
+  const ico::hash_type ht;
+  Icosahedron(ico::map_orientation orientation = ico::map_orientation::ECEF,
+              ico::rotation_method rotation = ico::rotation_method::gnomonic,
+              ico::hash_type ht = ico::hash_type::rowCol);
 
   typedef std::vector<std::vector<GPoint3>> all_icosahedron_points;
   typedef std::vector<std::vector<GPoint3>> lazy_icosahedron_points;
@@ -26,22 +28,22 @@ public:
     int res;
     int row;
     int col;
-    rotation_method rm;
-    map_orientation mo;
-    hash_type ht;
+    ico::rotation_method rm;
+    ico::map_orientation mo;
+    ico::hash_type ht;
   };
 
   /**
    * @param mo map_orientation
    * @returns map_orientation key for mo
    **/
-  static std::string map_orientation_key(map_orientation mo);
+  static std::string map_orientation_key(ico::map_orientation mo);
 
   /**
    * @param rm rotation_method
    * @returns rotation_method key for rm
    **/
-  static std::string rotation_method_key(rotation_method rm);
+  static std::string rotation_method_key(ico::rotation_method rm);
 
   /**
    * generates icosahedron triangles
@@ -108,10 +110,6 @@ public:
    * @returns phex for res containing p
    **/
   Phex not_lazy_containing_phex(Point3 p, int res) const;
-
-  /**
-   * @param p point
-   * @returns triangle containing p
-   **/
-  Triangle containing_triangle(Point3 p) const;
 };
+
+#endif
