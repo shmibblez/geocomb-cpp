@@ -1,9 +1,7 @@
 #ifndef TRIANGLE_HPP
 #define TRIANGLE_HPP
 
-#include "calc_percent.hpp"
 #include "enums.hpp"
-#include "icosahedron.hpp"
 #include "point3.hpp"
 #include <any>
 #include <cmath>

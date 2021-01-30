@@ -3,6 +3,8 @@
 Phex::Phex(std::vector<GPoint3> points, GPoint3 center)
     : points(points), center(center){};
 
+Phex::~Phex() {}
+
 std::vector<Phex>
 Phex::all_phexes(Icosahedron::all_icosahedron_points all_points) {
   // generate all points

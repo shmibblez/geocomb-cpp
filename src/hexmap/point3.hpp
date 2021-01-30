@@ -26,19 +26,11 @@ public:
     std::vector<Point3> pointsL;
     std::vector<Point3> pointsR;
     int lower_indx;
-
-    // TODO: how to save values to struct? (constructor)
-    // and if possible any way to make them const?
-    //.
-    // CHORE: IMPORTANT need to push to main
   };
 
   struct lazy_row_points_result {
     std::vector<Point3> row_points;
     int lower_indx;
-    lazy_row_points_result(std::vector<Point3> row_points, int lower_indx)
-        : row_points(row_points), lower_indx(lower_indx){};
-    ~lazy_row_points_result();
   };
 
   /**

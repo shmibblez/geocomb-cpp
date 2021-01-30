@@ -42,12 +42,12 @@ CalcPercent::calc_percent_result CalcPercent::gnomonic(const Triangle &tri,
   const double mag = mag_temp.mag();
 
   return {.percent_CA = mag_comp_CA / mag, .percent_CB = mag_comp_CB / mag};
-};
+}
 
 CalcPercent::calc_percent_result CalcPercent::quaternion(const Triangle &tri,
                                                          const Point3 &p) {
   throw std::logic_error("CalcPercent::quaternion not ready yet");
-};
+}
 
 CalcPercent::vec_side_components_result
 CalcPercent::vec_side_components(const Triangle &tri, const Point3 &i) {
@@ -73,4 +73,4 @@ CalcPercent::vec_side_components(const Triangle &tri, const Point3 &i) {
   Point3 vec_CB = u_CB;
   vec_CB.mult_by(mag_CB);
   return {.vec_CA = vec_CA, .vec_CB = vec_CB};
-};
+}

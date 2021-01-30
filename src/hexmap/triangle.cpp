@@ -1,4 +1,5 @@
 #include "triangle.hpp"
+#include "calc_percent.hpp"
 #include "enums.hpp"
 
 using std::round;
@@ -121,7 +122,7 @@ Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
   const Point3 right = this->direction == tri::pointing::UP
                            ? vert_result.pointsR[0]
                            : vert_result.pointsL[0];
-  const Point3::lazy_row_points_result horz_result =
+  Point3::lazy_row_points_result horz_result =
       rotation == ico::rotation_method::gnomonic
           ? Point3::lazy_row_points_gnomonic(lower_horz, left, right, nd,
                                              constants::lazy_range, lower_horz,

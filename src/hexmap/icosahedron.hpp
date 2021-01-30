@@ -2,10 +2,10 @@
 #define ICOSAHEDRON_HPP
 
 #include "enums.hpp"
+#include "triangle.hpp"
 #include <map>
 #include <vector>
 
-class Triangle;
 class Point3;
 class GPoint3;
 class Phex;

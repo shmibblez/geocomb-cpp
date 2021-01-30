@@ -68,6 +68,16 @@ void Quaternion::multiply(const Quaternion &q) {
 Point3::Point3(int x, int y, int z, bool is_vert, int tri_num)
     : x(x), y(y), z(z), is_vert(is_vert), tri_num(tri_num) {}
 
+Point3::~Point3() {}
+
+// struct Point3::lazy_row_points_result {
+//   std::vector<Point3> row_points;
+//   int lower_indx;
+//   lazy_row_points_result(std::vector<Point3> row_points, int lower_indx)
+//       : row_points(row_points), lower_indx(lower_indx){};
+//   ~lazy_row_points_result();
+// }
+
 double Point3::angle_between(const Point3 &p) const {
   double inner = this->dot(p);
   if (inner > 1) {
@@ -373,7 +383,7 @@ Point3::lazy_row_points_gnomonic(const int center, const Point3 &left,
                                  const int lazy_range, int lower, int upper) {
 
   if (num_divisions <= 0) {
-    return Point3::lazy_row_points_result(std::vector<Point3>({left}), 0);
+    return {.row_points = std::vector<Point3>({left}), .lower_indx = 0};
   }
   if (lower == -1) {
     lower = center - lazy_range;
@@ -407,7 +417,7 @@ Point3::lazy_row_points_gnomonic(const int center, const Point3 &left,
     rotated->spheriphy();
     point_arr.push_back(*rotated);
   }
-  return Point3::lazy_row_points_result(point_arr, lower);
+  return {.row_points = point_arr, .lower_indx = lower};
 }
 
 /**
@@ -523,7 +533,7 @@ Point3::lazy_row_points_quaternion(const int center, const Point3 &left,
                                    const Point3 &right, int num_divisions,
                                    const int lazy_range, int lower, int upper) {
   if (num_divisions <= 0) {
-    return Point3::lazy_row_points_result(std::vector<Point3>({left}), 0);
+    return {.row_points = std::vector<Point3>({left}), .lower_indx = 0};
   }
 
   if (lower == -1) {
@@ -554,5 +564,5 @@ Point3::lazy_row_points_quaternion(const int center, const Point3 &left,
     rotated->rotate(left, ang);
     point_arr.push_back(*rotated);
   }
-  return Point3::lazy_row_points_result(point_arr, lower);
+  return {.row_points = point_arr, .lower_indx = lower};
 };

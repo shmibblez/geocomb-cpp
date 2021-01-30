@@ -12,15 +12,15 @@ using std::trunc;
 
 Icosahedron::Icosahedron(ico::map_orientation orientation,
                          ico::rotation_method rotation, ico::hash_type ht)
-    : mo(orientation), rm(rotation), ht(ht), tris(Icosahedron::triangles()){};
+    : mo(orientation), rm(rotation), ht(ht), tris(Icosahedron::triangles()) {}
 
 std::string Icosahedron::map_orientation_key(ico::map_orientation mo) {
   return std::vector<std::string>({"e", "d"})[mo];
-};
+}
 
 std::string Icosahedron::rotation_method_key(ico::rotation_method rm) {
   return std::vector<std::string>({"g", "q"})[rm];
-};
+}
 
 /**
  * generates icosahedron triangles
@@ -159,7 +159,7 @@ std::vector<Triangle> Icosahedron::triangles() {
                18, 14, 15),
   });
   return tris;
-};
+}
 
 /**
  * -!-> very inefficient, literally just generates all tris and returns one at
@@ -178,7 +178,7 @@ Triangle Icosahedron::triangle(const int indx) {
                                 std::to_string(indx));
   }
   return Icosahedron::triangles()[indx];
-};
+}
 
 Point3 Icosahedron::point_from_coords(double lat, double lon) const {
   if (!(lat <= 90 && lat >= 90)) {
@@ -194,7 +194,7 @@ Point3 Icosahedron::point_from_coords(double lat, double lon) const {
   const double y = r * cos(lat) * sin(lon);
   const double z = r * sin(lat);
   return Point3(x, y, z);
-};
+}
 
 Icosahedron::hash_properties Icosahedron::hash(Point3 p, int res) {
   Icosahedron::all_icosahedron_points lazy_points =
@@ -204,10 +204,10 @@ Icosahedron::hash_properties Icosahedron::hash(Point3 p, int res) {
   return Icosahedron::hash_properties{.res = res,
                                       .row = cp.row,
                                       .col = cp.col,
-                                      .mo = this->mo,
                                       .rm = this->rm,
+                                      .mo = this->mo,
                                       .ht = this->ht};
-};
+}
 
 std::vector<std::vector<GPoint3>>
 Icosahedron::lazy_points_around(Point3 p, int res) const {
@@ -347,7 +347,7 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
   }
 
   return lazy_points;
-};
+}
 
 Triangle Icosahedron::containing_triangle(Point3 p) const {
   for (const Triangle t : this->tris) {
@@ -359,7 +359,7 @@ Triangle Icosahedron::containing_triangle(Point3 p) const {
       "This is likely due to a rounding error. Point coords -> x: " +
       std::to_string(p.x) + ", y: " + std::to_string(p.y) +
       ", z: " + std::to_string(p.z));
-};
+}
 
 GPoint3 Icosahedron::parse_hash(Icosahedron::hash_properties hash) const {
   if (hash.res <= 0) {
@@ -425,7 +425,7 @@ GPoint3 Icosahedron::parse_hash(Icosahedron::hash_properties hash) const {
 
   return GPoint3(p.x, p.y, p.z, hash.res, row, col, hash.mo, hash.rm,
                  GPoint3::is_phex_center(hash.res, row, col), tri.num);
-};
+}
 
 /**
  * TODO: need to test, have funny feeling won't work
@@ -477,7 +477,7 @@ Icosahedron::all_icosahedron_points Icosahedron::all_points(int res) const {
     }
   }
   return points;
-};
+}
 
 std::vector<Phex> Icosahedron::all_phexes(int res) {
 
@@ -493,7 +493,7 @@ std::vector<Phex> Icosahedron::all_phexes(int res) {
   }
 
   return phexes;
-};
+}
 
 /**
  * TODO: need to test of course
@@ -517,4 +517,4 @@ Phex Icosahedron::not_lazy_containing_phex(Point3 p, int res) const {
   // return closest phex value (copy)
   // need to check though, if RVO is applied here we're screwed
   return *closest_phex;
-};
+}

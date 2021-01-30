@@ -2,13 +2,19 @@
   "configurations": [
     {
       "name": "Mac",
-      "includePath": ["${workspaceFolder}/**"],
+      "includePath": [
+        "${workspaceFolder}/src/**",
+        "${workspaceFolder}/tests/**"
+      ],
       "defines": [],
-      "macFrameworkPath": ["/System/Library/Frameworks", "/Library/Frameworks"],
-      "compilerPath": "/usr/bin/clang",
+      "macFrameworkPath": [
+        "/System/Library/Frameworks",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/**"
+      ], // "/Library/Frameworks"
+      "compilerPath": "/usr/bin/g++",
       "cStandard": "c17",
       "cppStandard": "c++17",
-      "intelliSenseMode": "clang-x64"
+      "intelliSenseMode": "gcc-x64"
     }
   ],
   "version": 4
