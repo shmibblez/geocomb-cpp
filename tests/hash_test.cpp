@@ -17,5 +17,4 @@ int main() {
             << ", col: " + std::to_string(props.col);
 }
 
-// TODO: have multiple files, and have main() have options, and depending on
-// which test call from main()
+// TODO: fix bugz
