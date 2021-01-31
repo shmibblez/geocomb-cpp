@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef ENUMS_HPP
 #define ENUMS_HPP
 

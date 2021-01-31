@@ -41,7 +41,8 @@
         // "${workspaceFolder}/tests/**.cpp",
 
         "-o",
-        "${fileDirname}/${fileBasenameNoExtension}"
+        // "${fileDirname}/${fileBasenameNoExtension}"
+        "${workspaceFolder}/builds/${fileBasenameNoExtension}"
         // "-v"
       ],
       "options": {

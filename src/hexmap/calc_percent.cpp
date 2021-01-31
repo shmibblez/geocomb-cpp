@@ -5,6 +5,32 @@
 using std::cos;
 using std::sin;
 
+CalcPercent::vec_side_components_result
+CalcPercent::vec_side_components(const Triangle &tri, const Point3 &i) {
+  Point3 u_CA = tri.A;
+  u_CA.subtract(tri.C);
+  u_CA.unit();
+  Point3 u_CB = tri.B;
+  u_CB.subtract(tri.C);
+  Point3 CI = i;
+  CI.subtract(tri.C);
+
+  const double beta = u_CA.angle_between(CI);
+  const double alpha = CI.angle_between(u_CB);
+  const double phi = constants::PI - beta - alpha;
+
+  // law of sines to find missing magnitudes & lengths
+  const double mag_CI = CI.mag();
+  const double mag_CB = (mag_CI * sin(beta)) / sin(phi);
+  const double mag_CA = (mag_CI * sin(alpha)) / sin(phi);
+
+  Point3 vec_CA = u_CA;
+  vec_CA.mult_by(mag_CA);
+  Point3 vec_CB = u_CB;
+  vec_CB.mult_by(mag_CB);
+  return {.vec_CA = vec_CA, .vec_CB = vec_CB};
+}
+
 CalcPercent::calc_percent_result CalcPercent::gnomonic(const Triangle &tri,
                                                        const Point3 &p) {
   const double r = constants::radius;
@@ -46,31 +72,5 @@ CalcPercent::calc_percent_result CalcPercent::gnomonic(const Triangle &tri,
 
 CalcPercent::calc_percent_result CalcPercent::quaternion(const Triangle &tri,
                                                          const Point3 &p) {
-  throw std::logic_error("CalcPercent::quaternion not ready yet");
-}
-
-CalcPercent::vec_side_components_result
-CalcPercent::vec_side_components(const Triangle &tri, const Point3 &i) {
-  Point3 u_CA = tri.A;
-  u_CA.subtract(tri.C);
-  u_CA.unit();
-  Point3 u_CB = tri.B;
-  u_CB.subtract(tri.C);
-  Point3 CI = i;
-  CI.subtract(tri.C);
-
-  const double beta = u_CA.angle_between(CI);
-  const double alpha = CI.angle_between(u_CB);
-  const double phi = constants::PI - beta - alpha;
-
-  // law of sines to find missing magnitudes & lengths
-  const double mag_CI = CI.mag();
-  const double mag_CB = (mag_CI * sin(beta)) / sin(phi);
-  const double mag_CA = (mag_CI * sin(alpha)) / sin(phi);
-
-  Point3 vec_CA = u_CA;
-  vec_CA.mult_by(mag_CA);
-  Point3 vec_CB = u_CB;
-  vec_CB.mult_by(mag_CB);
-  return {.vec_CA = vec_CA, .vec_CB = vec_CB};
+  throw std::logic_error("CalcPercent->quaternion not ready yet");
 }

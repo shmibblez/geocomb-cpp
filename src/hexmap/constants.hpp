@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef CONSTANTS_HPP
 #define CONSTANTS_HPP
 
@@ -5,13 +7,13 @@
 
 namespace constants {
 // for generating points around another point
-static const int lazy_range = 2;
+inline const int lazy_range = 2;
 // earth's radius
-static const double radius = 200;
+inline const double radius = 200;
 // golden ratio
-static const double golden_ratio = (1 + sqrt(5)) / 2;
+inline const double golden_ratio = (1 + sqrt(5)) / 2;
 // pi
-static const double PI = 3.141592653589793238463;
+inline const double PI = 3.141592653589793238463;
 }; // namespace constants
 
 // hexmap functions

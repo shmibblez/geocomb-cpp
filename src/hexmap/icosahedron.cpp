@@ -181,7 +181,7 @@ Triangle Icosahedron::triangle(const int indx) {
 }
 
 Point3 Icosahedron::point_from_coords(double lat, double lon) const {
-  if (!(lat <= 90 && lat >= 90)) {
+  if (!(lat <= 90 && lat >= -90)) {
     throw std::invalid_argument("lat must be between -90 and 90");
   }
   if (!(lon <= 180 && lon >= -180)) {

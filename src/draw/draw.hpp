@@ -1,1 +1,3 @@
 // here are all functions to draw hexmap points, hexagons, vectors, etc
+// TODO: will use vulkan here to try and draw hexmap outputs - note: will learn
+// in process, or at least try to...

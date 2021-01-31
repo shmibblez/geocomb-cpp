@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PHEX_HPP
 #define PHEX_HPP
 
