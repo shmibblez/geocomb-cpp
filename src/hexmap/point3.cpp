@@ -214,7 +214,7 @@ Point3::closest_point_2d(std::vector<std::vector<GPoint3>> &points_2d) const {
       constants::radius * 20; // std::numeric_limits<double>::infinity();
   double dist = 0;
   // TODO: points_2d size is 0, also tri num should be 5 but is 0, fix that
-  // first
+  // first, might be causing this error
   std::cout << "\npoints_2d size: " << std::to_string(points_2d.size())
             << std::endl;
   for (std::vector<GPoint3> &points : points_2d) {
