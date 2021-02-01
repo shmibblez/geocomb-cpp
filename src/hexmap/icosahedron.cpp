@@ -4,6 +4,7 @@
 #include "triangle.hpp"
 #include <cmath>
 #include <functional>
+#include <iostream>
 #include <string>
 
 using std::cos;
@@ -29,14 +30,14 @@ std::string Icosahedron::rotation_method_key(ico::rotation_method rm) {
 std::vector<Triangle> Icosahedron::triangles() {
   const double gr = constants::golden_ratio;
   const double r = constants::radius;
-  const double factor = r / sqrt(gr * gr + 1);
+  const double factor = r / sqrt(gr * gr + 1.0);
 
   const double &_1 = factor;
   const double _gr = gr * factor;
 
   // rotate all base points so north pole aligns with z axis (this is angle
   // between vectors)
-  const double rads = -acos(gr / sqrt(1 + gr * gr));
+  const double rads = -acos(gr / sqrt(1.0 + gr * gr));
   /**
    *     how points are numbered
    *        N       N       N       N       N           - all top pent tris
@@ -351,8 +352,13 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
 
 Triangle Icosahedron::containing_triangle(Point3 p) const {
   for (const Triangle t : this->tris) {
-    if (t.contains_point(p))
+    if (t.contains_point(p)) {
+      std::cout << "\nicosahedron: found containing tri, tri num: "
+                << std::to_string(t.num);
       return t;
+    }
+    std::cout << "\ntri doesn't contain point, tri num: "
+              << std::to_string(t.num);
   }
   throw std::logic_error(
       "Icosahedron::containing_triangle failed to find containing triangle. "

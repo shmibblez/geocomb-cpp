@@ -21,7 +21,7 @@ public:
   double z;
   int tri_num;
   bool is_vert;
-  Point3(int x, int y, int z, bool is_vert = false, int tri_num = -1);
+  Point3(double x, double y, double z, bool is_vert = false, int tri_num = -1);
   ~Point3();
 
   struct lazy_side_points_result {

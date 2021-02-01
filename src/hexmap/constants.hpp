@@ -9,9 +9,9 @@ namespace constants {
 // for generating points around another point
 inline const int lazy_range = 2;
 // earth's radius
-inline const double radius = 200;
+inline const double radius = 250.0;
 // golden ratio
-inline const double golden_ratio = (1 + sqrt(5)) / 2;
+inline const double golden_ratio = (1.0 + sqrt(5.0)) / 2.0;
 // pi
 inline const double PI = 3.141592653589793238463;
 }; // namespace constants
@@ -22,7 +22,7 @@ public:
   // calculates number of divisions from resolution, always res * 3
   static int num_divisions(int resolution);
   // round 2 nums and check if equal enough
-  static bool equal_enough(double n1, double n2);
+  static bool equal_enough(double n1, double n2, int places = 6);
 
   // rounds up to next int i think
   static int round_up(const int num, const int mult);

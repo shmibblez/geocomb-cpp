@@ -13,16 +13,16 @@
 class Triangle {
 
 public:
-  Point3 A;
-  Point3 B;
-  Point3 C;
-  tri::pointing direction;
-  tri::position pos;
-  int num;
+  const Point3 A;
+  const Point3 B;
+  const Point3 C;
+  const tri::pointing direction;
+  const tri::position pos;
+  const int num;
   // triangle number next to this one (shares side)
-  int toAB;
-  int toBC;
-  int toCA;
+  const int toAB;
+  const int toBC;
+  const int toCA;
   Triangle(Point3 A, Point3 B, Point3 C,
            tri::pointing direction = tri::pointing::NA,
            tri::position pos = tri::position::NA, int num = -1, int toAB = -1,

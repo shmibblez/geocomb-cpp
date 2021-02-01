@@ -8,7 +8,7 @@
       "name": "(lldb) Launch",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/a.out",
+      "program": "${workspaceRoot}/builds/hash_test", // "${workspaceFolder}/a.out",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

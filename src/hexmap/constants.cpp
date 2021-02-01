@@ -1,13 +1,19 @@
 #include "constants.hpp"
+#include <iostream>
 
+using std::pow;
 using std::round;
 using std::sqrt;
 
 int hexmapf::num_divisions(int resolution) { return resolution * 3; };
 
-bool hexmapf::equal_enough(double n1, double n2) {
-  // TODO: round num here
-  throw "need to figure out how to round nums";
+bool hexmapf::equal_enough(double n1, double n2, int places) {
+  int mult = pow(10, places);
+  int left = round(n1 * mult);
+  int right = round(n2 * mult);
+  std::cout << "\nequal enough left: " << std::to_string(left)
+            << ", right: " << std::to_string(right);
+  return left == right;
 }
 
 int hexmapf::round_up(const int num, const int mult) {

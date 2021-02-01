@@ -1,6 +1,8 @@
 #include "point3.hpp"
 #include "triangle.hpp"
 #include <functional>
+#include <iostream>
+#include <string>
 
 using std::sqrt;
 
@@ -65,7 +67,7 @@ void Quaternion::multiply(const Quaternion &q) {
   w = w * q.w - a.dot(b);
 }
 
-Point3::Point3(int x, int y, int z, bool is_vert, int tri_num)
+Point3::Point3(double x, double y, double z, bool is_vert, int tri_num)
     : x(x), y(y), z(z), is_vert(is_vert), tri_num(tri_num) {}
 
 Point3::~Point3() {}
@@ -107,7 +109,16 @@ void Point3::rotate(const Point3 &around, const double &rad) {
   z = q.z;
 }
 
-double Point3::mag() const { return std::sqrt(x * x + y * y + z * z); }
+double Point3::mag() const {
+  // std::cout << "\n---magnitude---(x,y,z): (" << std::to_string(this->x) << ",
+  // "
+  //           << std::to_string(this->y) << ", " << std::to_string(this->z)
+  //           << ")";
+  const double sq =
+      std::sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
+  // std::cout << "\nmag->square root: " << std::to_string(sq);
+  return sq;
+}
 
 void Point3::add(const Point3 &p) {
   x += p.x;
@@ -126,9 +137,12 @@ double Point3::dot(const Point3 &p) const {
 }
 
 void Point3::cross(const Point3 &p) {
-  x = y * p.z - p.y * z;
-  y = z * p.x - p.z * x;
-  z = x * p.y - p.x * y;
+  const double t_x = this->x;
+  const double t_y = this->y;
+  const double t_z = this->z;
+  this->x = t_y * p.z - p.y * t_z;
+  this->y = t_z * p.x - p.z * t_x;
+  this->z = t_x * p.y - p.x * t_y;
 }
 
 void Point3::unit() {
@@ -167,9 +181,11 @@ void Point3::spherify1D(std::vector<Point3> &points) {
 }
 
 bool Point3::on_opposite_side(const Point3 &p) const {
-  return std::signbit(x) != std::signbit(p.x) ||
-         std::signbit(y) != std::signbit(p.y) ||
-         std::signbit(z) != std::signbit(p.z);
+  // return std::signbit(x) != std::signbit(p.x) ||
+  //        std::signbit(y) != std::signbit(p.y) ||
+  //        std::signbit(z) != std::signbit(p.z);
+  // FIXME: TODO: returns false for all
+  return false;
 }
 
 bool Point3::is_valid() const {
@@ -184,8 +200,8 @@ GPoint3 Point3::closest_point(std::vector<GPoint3> &points) const {
     dist = this->distance(p);
     if (dist < smallest_distance) {
       smallest_distance = dist;
-      // closest.reset(&p);
-      *closest = p;
+      closest.reset(&p);
+      // *closest = p;
     }
   }
   return *closest;
@@ -193,25 +209,39 @@ GPoint3 Point3::closest_point(std::vector<GPoint3> &points) const {
 
 GPoint3
 Point3::closest_point_2d(std::vector<std::vector<GPoint3>> &points_2d) const {
-  std::unique_ptr<GPoint3> closest;
-  double smallest_distance = std::numeric_limits<double>::infinity();
+  GPoint3 *closest = nullptr;
+  double smallest_distance =
+      constants::radius * 20; // std::numeric_limits<double>::infinity();
   double dist = 0;
+  // TODO: points_2d size is 0, also tri num should be 5 but is 0, fix that
+  // first
+  std::cout << "\npoints_2d size: " << std::to_string(points_2d.size())
+            << std::endl;
   for (std::vector<GPoint3> &points : points_2d) {
+    std::cout << "\npoints size: " << std::to_string(points.size())
+              << std::endl;
     for (GPoint3 &p : points) {
       dist = this->distance(p);
+      std::cout << "\nclosest_point_2d -> distance: " << std::to_string(dist)
+                << std::endl;
       if (dist < smallest_distance) {
         smallest_distance = dist;
         // closest.reset(&p);
         *closest = p;
+        std::cout << "\nclosest_point_2d -> found new closest point"
+                  << std::endl;
       }
     }
   }
-  return *closest;
+  GPoint3 closest_copy = *closest;
+  delete closest;
+  return closest_copy;
 }
 
 void Point3::rotate_around_y(double rads) {
+  const int o_x = this->x;
   this->x = this->x * cos(rads) + this->z * sin(rads);
-  this->z = -this->x * sin(rads) + this->z * cos(rads);
+  this->z = -o_x * sin(rads) + this->z * cos(rads);
 }
 
 /**
@@ -256,18 +286,18 @@ std::vector<Point3> Point3::all_side_points_gnomonic(const Point3 &above,
   // TODO: local vars are cached, value at pointer might actually take longer to
   // get -> test speed of this vs creating new instances/vars for each iteration
   double d;
-  std::unique_ptr<Point3> rotated;
+  // std::unique_ptr<Point3> rotated;
   for (int i = 1; i < nd; i++) {
     d = dist_unit * i;
     // set pointer's value
     // rotated.reset(&uAB);
-    *rotated = uAB;
-    rotated->mult_by(d);
-    rotated->add(A);
+    Point3 rotated = uAB;
+    rotated.mult_by(d);
+    rotated.add(A);
     // spheriphy point since gnomonic generates points between tri sides (along
     // line, not circle)
-    rotated->spheriphy();
-    point_arr.push_back(*rotated);
+    rotated.spheriphy();
+    point_arr.push_back(rotated);
   }
   // add last point
   point_arr.push_back(B);
@@ -321,17 +351,17 @@ Point3::lazy_side_points_gnomonic(const Triangle &tri, const int center,
     const double dist_unit = dist / nd;
 
     double d;
-    std::unique_ptr<Point3> rotated;
+    // std::unique_ptr<Point3> rotated;
     for (int c = lower; c <= upper; c++) {
       d = dist_unit * c;
       // rotated.reset(&uAB);
-      *rotated = uAB;
-      rotated->mult_by(d);
-      rotated->add(A);
+      Point3 rotated = uAB;
+      rotated.mult_by(d);
+      rotated.add(A);
       // spheriphy point since gnomonic generates points between tri sides
       // (along line, not circle)
-      rotated->spheriphy();
-      point_arr.push_back(*rotated);
+      rotated.spheriphy();
+      point_arr.push_back(rotated);
     }
     return point_arr;
   };
@@ -362,15 +392,15 @@ std::vector<Point3> Point3::all_row_points_gnomonic(const Point3 &left,
   points.push_back(left);
   // add points between
   double d;
-  std::unique_ptr<Point3> rotated;
+  // std::unique_ptr<Point3> rotated;
   for (int c = 1; c < num_divisions; c++) {
     d = dist_unit * c;
     // rotated.reset(&uLR);
-    *rotated = uLR;
-    rotated->mult_by(d);
-    rotated->add(left);
-    rotated->spheriphy();
-    points.push_back(*rotated);
+    Point3 rotated = uLR;
+    rotated.mult_by(d);
+    rotated.add(left);
+    rotated.spheriphy();
+    points.push_back(rotated);
   }
   // add last point
   points.push_back(right);
@@ -407,15 +437,15 @@ Point3::lazy_row_points_gnomonic(const int center, const Point3 &left,
   uLR.unit();
   // add points in lazy range
   double d;
-  std::unique_ptr<Point3> rotated;
+  // std::unique_ptr<Point3> rotated;
   for (int c = lower; c <= upper; c++) {
     d = dist_unit * c;
     // rotated.reset(&uLR);
-    *rotated = uLR;
-    rotated->mult_by(d);
-    rotated->add(left);
-    rotated->spheriphy();
-    point_arr.push_back(*rotated);
+    Point3 rotated = uLR;
+    rotated.mult_by(d);
+    rotated.add(left);
+    rotated.spheriphy();
+    point_arr.push_back(rotated);
   }
   return {.row_points = point_arr, .lower_indx = lower};
 }
@@ -437,13 +467,13 @@ std::vector<Point3> Point3::all_side_points_quaternion(const Point3 &above,
   point_arr.push_back(above);
   // add points between
   double ang;
-  std::unique_ptr<Point3> rotated;
+  // std::unique_ptr<Point3> rotated;
   for (int c = 1; c < nd; c++) {
     ang = angle_unit * c;
     // Point3 above_copy = above;
-    *rotated = above;
-    rotated->rotate(axis, ang);
-    point_arr.push_back(*rotated);
+    Point3 rotated = above;
+    rotated.rotate(axis, ang);
+    point_arr.push_back(rotated);
   }
   // add last point
   point_arr.push_back(below);
@@ -479,12 +509,12 @@ Point3::lazy_side_points_quaternion(const Triangle &tri, const int center,
     Point3 axis = top;
     axis.cross(bot);
     double ang;
-    std::unique_ptr<Point3> rotated;
+    // std::unique_ptr<Point3> rotated;
     for (int c = lower; c <= upper; c++) {
       ang = angle_unit * c;
-      *rotated = top;
-      rotated->rotate(axis, ang);
-      arr.push_back(*rotated);
+      Point3 rotated = top;
+      rotated.rotate(axis, ang);
+      arr.push_back(rotated);
     }
     return arr;
   };
@@ -557,12 +587,12 @@ Point3::lazy_row_points_quaternion(const int center, const Point3 &left,
   axis.cross(right);
   // add points in lazy range
   double ang;
-  std::unique_ptr<Point3> rotated;
+  // std::unique_ptr<Point3> rotated;
   for (int c = lower; c <= upper; c++) {
     ang = angle_unit * c;
-    *rotated = left;
-    rotated->rotate(left, ang);
-    point_arr.push_back(*rotated);
+    Point3 rotated = left;
+    rotated.rotate(left, ang);
+    point_arr.push_back(rotated);
   }
   return {.row_points = point_arr, .lower_indx = lower};
 };

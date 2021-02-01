@@ -1,6 +1,8 @@
 #include "triangle.hpp"
 #include "calc_percent.hpp"
 #include "enums.hpp"
+#include <iostream>
+#include <string>
 
 using std::round;
 
@@ -137,7 +139,22 @@ Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
 bool Triangle::contains_point(Point3 &point) const {
   // vec and tri intersection point
   const Point3 intersection = this->plane_intersection(point);
+  std::cout << "\nintersection (x, y, z): (" << std::to_string(intersection.x)
+            << ", " << std::to_string(intersection.y) << ", "
+            << std::to_string(intersection.z) << ")";
+  // std::cout << "\ntri->A (x, y, z): (" << std::to_string(this->A.x) << ", "
+  //           << std::to_string(this->A.y) << ", " << std::to_string(this->A.z)
+  //           << ")";
+  // std::cout << "\ntri->B (x, y, z): (" << std::to_string(this->B.x) << ", "
+  //           << std::to_string(this->B.y) << ", " << std::to_string(this->B.z)
+  //           << ")";
+  // std::cout << "\ntri->C (x, y, z): (" << std::to_string(this->C.x) << ", "
+  //           << std::to_string(this->C.y) << ", " << std::to_string(this->C.z)
+  //           << ")";
   // check if intersection on opposite side
+  // std::cout << "\n--------------------\ntri num: " <<
+  // std::to_string(this->num)
+  //           << ", intersection mag: " << std::to_string(intersection.mag());
   if (intersection.on_opposite_side(point)) {
     return false;
   }
@@ -149,20 +166,25 @@ bool Triangle::contains_point(Point3 &point) const {
   const double tri_area = this->area();
   // if any sub tri area is bigger than thisArea it means point outside of
   // triangle
+  // std::cout << "\nthis tri area: " << std::to_string(tri_area);
   const double pAB_area = Triangle(this->A, this->B, intersection).area();
+  // std::cout << "\npAB_area:      " << std::to_string(pAB_area);
   if (pAB_area > tri_area + 0.01) {
     return false;
   }
   const double pBC_area = Triangle(intersection, this->B, this->C).area();
+  // std::cout << "\npBC_area:      " << std::to_string(pBC_area);
   if (pBC_area > tri_area + 0.01) {
     return false;
   }
   const double pCA_area = Triangle(this->A, intersection, this->C).area();
+  // std::cout << "\npCA_area:      " << std::to_string(pCA_area);
   if (pCA_area > tri_area + 0.01) {
     return false;
   }
   // round and check if equal enough
   const double combined_area = pAB_area + pBC_area + pCA_area;
+  // std::cout << "\n-combined area: " << std::to_string(combined_area);
   return hexmapf::equal_enough(tri_area, combined_area);
 };
 
@@ -182,10 +204,11 @@ Point3 Triangle::plane_intersection(Point3 vec) const {
   const double v_denom = l * vec.x + m * vec.y + n * vec.z;
   const double v = v_numer / v_denom;
   // parametric equation for line along vec (from origin)
-  const double x = vec.x * v;
-  const double y = vec.y * v;
-  const double z = vec.z * v;
-  return Point3(x, y, z);
+  // t_ is for temp
+  const double t_x = vec.x * v;
+  const double t_y = vec.y * v;
+  const double t_z = vec.z * v;
+  return Point3(t_x, t_y, t_z);
 };
 
 double Triangle::area() const {
@@ -194,6 +217,16 @@ double Triangle::area() const {
   Point3 BC = this->C;
   BC.subtract(this->B);
   Point3 temp = AB;
-  AB.cross(BC);
-  return temp.mag();
+  temp.cross(BC);
+
+  // std::cout << "\nAB (x,y,z): (" << std::to_string(AB.x) << ", "
+  //           << std::to_string(AB.y) << ", " << std::to_string(AB.z) << ")";
+  // std::cout << "\nBC (x,y,z): (" << std::to_string(BC.x) << ", "
+  //           << std::to_string(BC.y) << ", " << std::to_string(BC.z) << ")";
+  // std::cout << "\ntemp (x,y,z): (" << std::to_string(temp.x) << ", "
+  //           << std::to_string(temp.y) << ", " << std::to_string(temp.z) <<
+  //           ")";
+  const double mag = temp.mag();
+  // std::cout << "\nmagnitude: " << std::to_string(mag);
+  return mag / 2.0;
 }

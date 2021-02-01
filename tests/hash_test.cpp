@@ -8,7 +8,7 @@ int main() {
       Icosahedron(ico::map_orientation::ECEF, ico::rotation_method::gnomonic,
                   ico::hash_type::rowCol);
 
-  Point3 p = ico.point_from_coords(45, 45);
+  Point3 p = ico.point_from_coords(0, 0);
   Icosahedron::hash_properties props = ico.hash(p, 7);
 
   std::cout << "created point, hash properties below\n";
