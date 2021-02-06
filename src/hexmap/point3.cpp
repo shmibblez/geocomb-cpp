@@ -1,7 +1,7 @@
 #include "point3.hpp"
 #include "triangle.hpp"
 #include <functional>
-#include <iostream>
+#include <limits>
 #include <string>
 
 using std::sqrt;
@@ -10,6 +10,12 @@ GPoint3::GPoint3(double x, double y, double z, int res, int row, int col,
                  ico::map_orientation mo, ico::rotation_method rm, bool is_vert,
                  int tri_num)
     : Point3::Point3(x, y, z, is_vert, tri_num), res(res), row(row), col(col) {}
+
+GPoint3::GPoint3()
+    : Point3::Point3(std::numeric_limits<double>::infinity(),
+                     std::numeric_limits<double>::infinity(),
+                     std::numeric_limits<double>::infinity(), false, -1),
+      res(-1), row(-1), col(-1) {}
 
 bool GPoint3::is_phex_center(const int res, const int row, const int col) {
   const int nd = hexmapf::num_divisions(res);
@@ -110,13 +116,8 @@ void Point3::rotate(const Point3 &around, const double &rad) {
 }
 
 double Point3::mag() const {
-  // std::cout << "\n---magnitude---(x,y,z): (" << std::to_string(this->x) << ",
-  // "
-  //           << std::to_string(this->y) << ", " << std::to_string(this->z)
-  //           << ")";
   const double sq =
       std::sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
-  // std::cout << "\nmag->square root: " << std::to_string(sq);
   return sq;
 }
 
@@ -184,7 +185,7 @@ bool Point3::on_opposite_side(const Point3 &p) const {
   // return std::signbit(x) != std::signbit(p.x) ||
   //        std::signbit(y) != std::signbit(p.y) ||
   //        std::signbit(z) != std::signbit(p.z);
-  // FIXME: TODO: returns false for all
+  // FIXME: TODO: returns false for all, still, small optimization
   return false;
 }
 
@@ -209,33 +210,26 @@ GPoint3 Point3::closest_point(std::vector<GPoint3> &points) const {
 
 GPoint3
 Point3::closest_point_2d(std::vector<std::vector<GPoint3>> &points_2d) const {
-  GPoint3 *closest = nullptr;
+  GPoint3 *closest = new GPoint3();
   double smallest_distance =
       constants::radius * 20; // std::numeric_limits<double>::infinity();
   double dist = 0;
   // TODO: points_2d size is 0, also tri num should be 5 but is 0, fix that
   // first, might be causing this error
-  std::cout << "\npoints_2d size: " << std::to_string(points_2d.size())
-            << std::endl;
   for (std::vector<GPoint3> &points : points_2d) {
-    std::cout << "\npoints size: " << std::to_string(points.size())
-              << std::endl;
     for (GPoint3 &p : points) {
       dist = this->distance(p);
-      std::cout << "\nclosest_point_2d -> distance: " << std::to_string(dist)
-                << std::endl;
       if (dist < smallest_distance) {
         smallest_distance = dist;
-        // closest.reset(&p);
         *closest = p;
-        std::cout << "\nclosest_point_2d -> found new closest point"
-                  << std::endl;
       }
     }
   }
-  GPoint3 closest_copy = *closest;
+
+  // bit hacky, but for deleting allocated mem before leaving function
+  GPoint3 p_copy = *closest;
   delete closest;
-  return closest_copy;
+  return p_copy;
 }
 
 void Point3::rotate_around_y(double rads) {

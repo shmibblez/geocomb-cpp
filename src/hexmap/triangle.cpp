@@ -139,22 +139,7 @@ Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
 bool Triangle::contains_point(Point3 &point) const {
   // vec and tri intersection point
   const Point3 intersection = this->plane_intersection(point);
-  std::cout << "\nintersection (x, y, z): (" << std::to_string(intersection.x)
-            << ", " << std::to_string(intersection.y) << ", "
-            << std::to_string(intersection.z) << ")";
-  // std::cout << "\ntri->A (x, y, z): (" << std::to_string(this->A.x) << ", "
-  //           << std::to_string(this->A.y) << ", " << std::to_string(this->A.z)
-  //           << ")";
-  // std::cout << "\ntri->B (x, y, z): (" << std::to_string(this->B.x) << ", "
-  //           << std::to_string(this->B.y) << ", " << std::to_string(this->B.z)
-  //           << ")";
-  // std::cout << "\ntri->C (x, y, z): (" << std::to_string(this->C.x) << ", "
-  //           << std::to_string(this->C.y) << ", " << std::to_string(this->C.z)
-  //           << ")";
-  // check if intersection on opposite side
-  // std::cout << "\n--------------------\ntri num: " <<
-  // std::to_string(this->num)
-  //           << ", intersection mag: " << std::to_string(intersection.mag());
+
   if (intersection.on_opposite_side(point)) {
     return false;
   }
@@ -166,26 +151,22 @@ bool Triangle::contains_point(Point3 &point) const {
   const double tri_area = this->area();
   // if any sub tri area is bigger than thisArea it means point outside of
   // triangle
-  // std::cout << "\nthis tri area: " << std::to_string(tri_area);
   const double pAB_area = Triangle(this->A, this->B, intersection).area();
-  // std::cout << "\npAB_area:      " << std::to_string(pAB_area);
   if (pAB_area > tri_area + 0.01) {
     return false;
   }
   const double pBC_area = Triangle(intersection, this->B, this->C).area();
-  // std::cout << "\npBC_area:      " << std::to_string(pBC_area);
   if (pBC_area > tri_area + 0.01) {
     return false;
   }
   const double pCA_area = Triangle(this->A, intersection, this->C).area();
-  // std::cout << "\npCA_area:      " << std::to_string(pCA_area);
   if (pCA_area > tri_area + 0.01) {
     return false;
   }
   // round and check if equal enough
   const double combined_area = pAB_area + pBC_area + pCA_area;
-  // std::cout << "\n-combined area: " << std::to_string(combined_area);
-  return hexmapf::equal_enough(tri_area, combined_area);
+  const int equal_nuff = hexmapf::equal_enough(tri_area, combined_area);
+  return equal_nuff;
 };
 
 Point3 Triangle::plane_intersection(Point3 vec) const {
@@ -219,14 +200,7 @@ double Triangle::area() const {
   Point3 temp = AB;
   temp.cross(BC);
 
-  // std::cout << "\nAB (x,y,z): (" << std::to_string(AB.x) << ", "
-  //           << std::to_string(AB.y) << ", " << std::to_string(AB.z) << ")";
-  // std::cout << "\nBC (x,y,z): (" << std::to_string(BC.x) << ", "
-  //           << std::to_string(BC.y) << ", " << std::to_string(BC.z) << ")";
-  // std::cout << "\ntemp (x,y,z): (" << std::to_string(temp.x) << ", "
-  //           << std::to_string(temp.y) << ", " << std::to_string(temp.z) <<
-  //           ")";
   const double mag = temp.mag();
-  // std::cout << "\nmagnitude: " << std::to_string(mag);
+
   return mag / 2.0;
 }

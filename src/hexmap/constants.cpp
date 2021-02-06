@@ -1,5 +1,4 @@
 #include "constants.hpp"
-#include <iostream>
 
 using std::pow;
 using std::round;
@@ -9,11 +8,10 @@ int hexmapf::num_divisions(int resolution) { return resolution * 3; };
 
 bool hexmapf::equal_enough(double n1, double n2, int places) {
   int mult = pow(10, places);
-  int left = round(n1 * mult);
-  int right = round(n2 * mult);
-  std::cout << "\nequal enough left: " << std::to_string(left)
-            << ", right: " << std::to_string(right);
-  return left == right;
+  long left = round(n1 * mult);
+  long right = round(n2 * mult);
+  bool result = left == right;
+  return result;
 }
 
 int hexmapf::round_up(const int num, const int mult) {

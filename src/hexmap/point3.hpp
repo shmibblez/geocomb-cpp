@@ -264,6 +264,11 @@ public:
           bool is_vert = false, int tri_num = -1);
 
   /**
+   * default constructor, creates invalid point
+   **/
+  GPoint3();
+
+  /**
    * checks if point is phex center
    * @param res resolution
    * @param row row

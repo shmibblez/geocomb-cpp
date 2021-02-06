@@ -8,13 +8,13 @@ int main() {
       Icosahedron(ico::map_orientation::ECEF, ico::rotation_method::gnomonic,
                   ico::hash_type::rowCol);
 
-  Point3 p = ico.point_from_coords(0, 0);
+  Point3 p = ico.point_from_coords(45, 45);
   Icosahedron::hash_properties props = ico.hash(p, 7);
 
-  std::cout << "created point, hash properties below\n";
-  std::cout << "res: " + std::to_string(props.res)
-            << ", row: " + std::to_string(props.row)
-            << ", col: " + std::to_string(props.col);
+  std::cout << "\ncreated point, hash properties belowss";
+  std::cout << "\nres: " + std::to_string(props.res)
+            << ",\nrow: " + std::to_string(props.row)
+            << ",\ncol: " + std::to_string(props.col) << "\n";
 }
 
 // TODO: fix bugz

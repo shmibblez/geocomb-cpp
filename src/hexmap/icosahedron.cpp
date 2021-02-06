@@ -4,7 +4,6 @@
 #include "triangle.hpp"
 #include <cmath>
 #include <functional>
-#include <iostream>
 #include <string>
 
 using std::cos;
@@ -353,12 +352,8 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
 Triangle Icosahedron::containing_triangle(Point3 p) const {
   for (const Triangle t : this->tris) {
     if (t.contains_point(p)) {
-      std::cout << "\nicosahedron: found containing tri, tri num: "
-                << std::to_string(t.num);
       return t;
     }
-    std::cout << "\ntri doesn't contain point, tri num: "
-              << std::to_string(t.num);
   }
   throw std::logic_error(
       "Icosahedron::containing_triangle failed to find containing triangle. "
