@@ -27,4 +27,9 @@ int main() {
             << ",\ncol: " + std::to_string(props.col) << "\n";
 }
 
-// TODO: fix bugz
+// TODO: not hashing for really high res
+
+//.
+// FIXME: not working for coords (doesn't match with hexmap node hash)
+// lat  |  lon  |  res
+// -70  |  179  |  144000
