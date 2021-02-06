@@ -8,8 +8,18 @@ int main() {
       Icosahedron(ico::map_orientation::ECEF, ico::rotation_method::gnomonic,
                   ico::hash_type::rowCol);
 
-  Point3 p = ico.point_from_coords(45, 45);
-  Icosahedron::hash_properties props = ico.hash(p, 7);
+  int lat, lon;
+  unsigned int res;
+
+  std::cout << "\ninsert point coords, lat: ";
+  std::cin >> lat;
+  std::cout << "lon: ";
+  std::cin >> lon;
+  std::cout << "res: ";
+  std::cin >> res;
+
+  Point3 p = ico.point_from_coords(lat, lon);
+  Icosahedron::hash_properties props = ico.hash(p, res);
 
   std::cout << "\ncreated point, hash properties belowss";
   std::cout << "\nres: " + std::to_string(props.res)
