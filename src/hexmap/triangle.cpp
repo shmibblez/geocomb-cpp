@@ -1,6 +1,7 @@
 #include "triangle.hpp"
 #include "calc_percent.hpp"
 #include "enums.hpp"
+
 #include <iostream>
 #include <string>
 
@@ -49,16 +50,26 @@ Triangle::lazy_points_around_result
 Triangle::lazy_points_around(Point3 &p, int res,
                              ico::rotation_method rotation) const {
 
+  std::cout << "\n>>>Triangle::lazy_points_around\n";
+
   const int nd = hexmapf::num_divisions(res);
   // calc side percents
   const CalcPercent::calc_percent_result percents =
       rotation == ico::rotation_method::gnomonic
           ? CalcPercent::gnomonic(*this, p)
           : CalcPercent::quaternion(*this, p);
+
+  std::cout << "percents, percent_CA: " << std::to_string(percents.percent_CA)
+            << ", percent_CB: " << std::to_string(percents.percent_CB) << "\n";
+
   // calculate percent of intersect component from C to A
   const int estimated_vert_center = this->direction == tri::pointing::UP
                                         ? round(nd - percents.percent_CA * nd)
                                         : round(percents.percent_CA * nd);
+
+  std::cout << "estimated_vert_center: "
+            << std::to_string(estimated_vert_center) << "\n";
+
   // lazy calculate points
   Point3::lazy_side_points_result side_point_result =
       rotation == ico::rotation_method::gnomonic
@@ -66,12 +77,17 @@ Triangle::lazy_points_around(Point3 &p, int res,
           : Point3::lazy_side_points_quaternion(*this, estimated_vert_center,
                                                 res);
 
+  // std::cout << "lazy side points gnomonic, lower_indx: "
+  //           << std::to_string(side_point_result.lower_indx) << "\n";
+
   // replaced n with i
   // int n = 0;
 
   std::vector<std::vector<Point3>> points;
 
   const int estimated_horz_center = round(percents.percent_CB * nd);
+  std::cout << "estimated_horz_center: "
+            << std::to_string(estimated_horz_center) << "\n";
   // while vertical points exist, generate points for their rows in range
   int lower_horz_bound;
   // not hit or miss like js hexmap, here lazy range starts from vec[0]
@@ -100,6 +116,12 @@ Triangle::lazy_points_around(Point3 &p, int res,
     // better way to set lower_horz_bound? only need last value...
     lower_horz_bound = row_points_result.lower_indx;
   }
+  std::cout << "start_vert: " << std::to_string(side_point_result.lower_indx)
+            << "\n";
+  std::cout << "start_horz: " << std::to_string(lower_horz_bound);
+
+  std::cout << "\n<<<Triangle::lazy_points_around\n";
+
   return {.points = points,
           .start_vert = side_point_result.lower_indx,
           .start_horz = lower_horz_bound};
@@ -166,6 +188,7 @@ bool Triangle::contains_point(Point3 &point) const {
   // round and check if equal enough
   const double combined_area = pAB_area + pBC_area + pCA_area;
   const int equal_nuff = hexmapf::equal_enough(tri_area, combined_area);
+
   return equal_nuff;
 };
 

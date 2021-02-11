@@ -6,6 +6,8 @@
 #include <functional>
 #include <string>
 
+#include <iostream>
+
 using std::cos;
 using std::sin;
 using std::trunc;
@@ -199,8 +201,20 @@ Point3 Icosahedron::point_from_coords(double lat, double lon) const {
 Icosahedron::hash_properties Icosahedron::hash(Point3 p, int res) {
   Icosahedron::all_icosahedron_points lazy_points =
       this->lazy_points_around(p, res);
+
+  std::cout << "Icosahedron::hash, lazy points around arr size: "
+            << std::to_string(lazy_points.size())
+            << ", sub-vec size: " + std::to_string(lazy_points[0].size())
+            << "\n";
   // closest point that is also phex center
   GPoint3 cp = p.closest_point_2d(lazy_points);
+
+  std::cout << "Icosahedron::hash, closest point info:"
+            << "\n  x: " << cp.x << "\n  y: " << cp.y << "\n  z: " << cp.z
+            << "\n  row: " << cp.row << "\n  col: " << cp.col
+            << "\n  res: " << cp.res << "\n  triNum: " << cp.tri_num
+            << "\n  isVert: " << cp.is_vert << "\n";
+
   return Icosahedron::hash_properties{.res = res,
                                       .row = cp.row,
                                       .col = cp.col,
@@ -211,7 +225,9 @@ Icosahedron::hash_properties Icosahedron::hash(Point3 p, int res) {
 
 std::vector<std::vector<GPoint3>>
 Icosahedron::lazy_points_around(Point3 p, int res) const {
+  std::cout << "\n>>>Icosahedron::lazy_points_around\n";
   const Triangle tri = this->containing_triangle(p);
+  std::cout << "containing tri num: " << std::to_string(tri.num) << "\n";
   const int nd = hexmapf::num_divisions(res);
   // points and lazy range start indexes in relation to tri.C
   Triangle::lazy_points_around_result tri_points_around =
@@ -219,6 +235,10 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
 
   const int lower_vert = tri_points_around.start_vert;
   const int lower_horz = tri_points_around.start_horz;
+
+  std::cout << "lower_vert: " + std::to_string(lower_vert)
+            << ", lower_horz: " + std::to_string(lower_horz) << "\n";
+
   const std::vector<std::vector<Point3>> points = tri_points_around.points;
 
   // TODO: move indexing functions to static function class instead of creating
@@ -246,6 +266,7 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
         indexed_points[r].push_back(new_point);
       }
     }
+    std::cout << "<<<Icosahedron::lazy_points_around\n\n";
     return indexed_points;
   };
   // index center up
@@ -352,6 +373,8 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
 Triangle Icosahedron::containing_triangle(Point3 p) const {
   for (const Triangle t : this->tris) {
     if (t.contains_point(p)) {
+      std::cout << "found containing tri, tri num: " << std::to_string(t.num)
+                << "\n";
       return t;
     }
   }

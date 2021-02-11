@@ -9,12 +9,15 @@
       "defines": [],
       "macFrameworkPath": [
         "/System/Library/Frameworks",
-        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/**"
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
+        "/usr/local/include",
+        "/Users/shmibbles/vulkan/macOS/include"
+        // "/Users/shmibbles/vulkan/MoltenVK/**"
       ], // "/Library/Frameworks"
       "compilerPath": "/usr/bin/g++",
       "cStandard": "c17",
       "cppStandard": "c++17",
-      "intelliSenseMode": "gcc-x64"
+      "intelliSenseMode": "clang-x64"
     }
   ],
   "version": 4

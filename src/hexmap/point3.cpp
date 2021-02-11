@@ -4,6 +4,8 @@
 #include <limits>
 #include <string>
 
+#include <iostream>
+
 using std::sqrt;
 
 GPoint3::GPoint3(double x, double y, double z, int res, int row, int col,
@@ -87,11 +89,11 @@ Point3::~Point3() {}
 // }
 
 double Point3::angle_between(const Point3 &p) const {
-  double inner = this->dot(p);
-  if (inner > 1) {
-    inner = 1;
-  } else if (inner < -1) {
-    inner = -1;
+  double inner = this->dot(p) / (this->mag() * p.mag());
+  if (inner > 1.0) {
+    inner = 1.0;
+  } else if (inner < -1.0) {
+    inner = -1.0;
   }
   return std::acos(inner);
 }
@@ -182,11 +184,11 @@ void Point3::spherify1D(std::vector<Point3> &points) {
 }
 
 bool Point3::on_opposite_side(const Point3 &p) const {
-  // return std::signbit(x) != std::signbit(p.x) ||
-  //        std::signbit(y) != std::signbit(p.y) ||
-  //        std::signbit(z) != std::signbit(p.z);
-  // FIXME: TODO: returns false for all, still, small optimization
-  return false;
+  return std::signbit(x) != std::signbit(p.x) ||
+         std::signbit(y) != std::signbit(p.y) ||
+         std::signbit(z) != std::signbit(p.z);
+  // // FIXME: TODO: returns false for all, still, small optimization
+  // return false;
 }
 
 bool Point3::is_valid() const {
@@ -302,6 +304,9 @@ Point3::lazy_side_points_result
 Point3::lazy_side_points_gnomonic(const Triangle &tri, const int center,
                                   const int res, const int lazy_range,
                                   int lower, int upper) {
+
+  std::cout << "\n>>>Point3::lazy_side_points_gnomonic\n";
+
   const int nd = hexmapf::num_divisions(res);
   if (lower == -1) {
     lower = center - lazy_range;
@@ -357,6 +362,9 @@ Point3::lazy_side_points_gnomonic(const Triangle &tri, const int center,
       rotated.spheriphy();
       point_arr.push_back(rotated);
     }
+
+    std::cout << "\n<<<Point3::lazy_side_points_gnomonic\n";
+
     return point_arr;
   };
 
