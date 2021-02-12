@@ -20,7 +20,7 @@ int main() {
 
   lat = -70;
   lon = 179;
-  res = 144000;
+  res = 144;
 
   std::cout << "\n\nlat: " + std::to_string(lat)
             << ", lon: " + std::to_string(lon)
@@ -41,7 +41,8 @@ int main() {
             << ",\ncol: " + std::to_string(props.col) << "\n";
 }
 
-// TODO: not hashing for really high res
+// TODO: for high res hashes don't match with hexmap node, try compiling with
+// no-rounding flags, or use long double
 
 //.
 // FIXME: not working for coords (doesn't match with hexmap node hash)

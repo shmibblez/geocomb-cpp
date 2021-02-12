@@ -287,7 +287,7 @@ public:
 class Quaternion : public Point3 {
 
 public:
-  int w;
+  double w;
   Quaternion(double x, double y, double z, double w);
 
   /**

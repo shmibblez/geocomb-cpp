@@ -22,7 +22,7 @@ int hexmapf::round_up(const int num, const int mult) {
   return (trunc(num / mult) + 1) * mult;
 }
 
-double hexmapf::deg_2_rad(double deg) { return deg * (constants::PI / 180); };
+double hexmapf::deg_2_rad(double deg) { return deg * (constants::PI / 180.0); };
 
 int hexmapf::closest_even_num(const int n) {
   const bool is_even = n % 2 == 0;

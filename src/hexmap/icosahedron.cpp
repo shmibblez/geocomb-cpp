@@ -50,31 +50,31 @@ std::vector<Triangle> Icosahedron::triangles() {
    *           S       S       S       S       S        - all bottom pent tris
    *           *       *       *       *       *          share south point
    */
-  Point3 north = Point3(_1, 0, _gr, true);
+  Point3 north = Point3(_1, 0.0, _gr, true);
   north.rotate_around_y(rads);
-  Point3 top1 = Point3(_gr, -_1, 0, true);
+  Point3 top1 = Point3(_gr, -_1, 0.0, true);
   top1.rotate_around_y(rads);
-  Point3 top2 = Point3(_gr, _1, 0, true);
+  Point3 top2 = Point3(_gr, _1, 0.0, true);
   top2.rotate_around_y(rads);
   Point3 top3 = Point3(0, _gr, _1, true);
   top3.rotate_around_y(rads);
-  Point3 top4 = Point3(-_1, 0, _gr, true);
+  Point3 top4 = Point3(-_1, 0.0, _gr, true);
   top4.rotate_around_y(rads);
   Point3 top5 = Point3(0, -_gr, _1, true);
   top5.rotate_around_y(rads);
 
-  Point3 bot1 = Point3(_1, 0, -_gr, true);
+  Point3 bot1 = Point3(_1, 0.0, -_gr, true);
   bot1.rotate_around_y(rads);
   Point3 bot2 = Point3(0, _gr, -_1, true);
   bot2.rotate_around_y(rads);
-  Point3 bot3 = Point3(-_gr, _1, 0, true);
+  Point3 bot3 = Point3(-_gr, _1, 0.0, true);
   bot3.rotate_around_y(rads);
-  Point3 bot4 = Point3(-_gr, -_1, 0, true);
+  Point3 bot4 = Point3(-_gr, -_1, 0.0, true);
   bot4.rotate_around_y(rads);
   Point3 bot5 = Point3(0, -_gr, -_1, true);
   bot5.rotate_around_y(rads);
 
-  Point3 south = Point3(-_1, 0, -_gr, true);
+  Point3 south = Point3(-_1, 0.0, -_gr, true);
   south.rotate_around_y(rads);
 
   /**
@@ -212,8 +212,7 @@ Icosahedron::hash_properties Icosahedron::hash(Point3 p, int res) {
   std::cout << "Icosahedron::hash, closest point info:"
             << "\n  x: " << cp.x << "\n  y: " << cp.y << "\n  z: " << cp.z
             << "\n  row: " << cp.row << "\n  col: " << cp.col
-            << "\n  res: " << cp.res << "\n  triNum: " << cp.tri_num
-            << "\n  isVert: " << cp.is_vert << "\n";
+            << "\n  res: " << cp.res << "\n  isVert: " << cp.is_vert << "\ns";
 
   return Icosahedron::hash_properties{.res = res,
                                       .row = cp.row,

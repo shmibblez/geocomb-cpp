@@ -102,7 +102,7 @@ double Point3::angle_between(const Point3 &p) const {
  * @param rad rads to rotate
  * @note modifies obj **/
 void Point3::rotate(const Point3 &around, const double &rad) {
-  Quaternion axis(around.x, around.y, around.z, 0);
+  Quaternion axis(around.x, around.y, around.z, 0.0);
   axis.unit();
   const double num = sin(rad / 2.0);
   // multiply vec component by sin(rad / 2.0), and w component is cos(rad / 2.0)
@@ -216,14 +216,15 @@ Point3::closest_point_2d(std::vector<std::vector<GPoint3>> &points_2d) const {
   double smallest_distance =
       constants::radius * 20; // std::numeric_limits<double>::infinity();
   double dist = 0;
-  // TODO: points_2d size is 0, also tri num should be 5 but is 0, fix that
-  // first, might be causing this error
+
   for (std::vector<GPoint3> &points : points_2d) {
     for (GPoint3 &p : points) {
-      dist = this->distance(p);
-      if (dist < smallest_distance) {
-        smallest_distance = dist;
-        *closest = p;
+      if (p.is_vert) {
+        dist = this->distance(p);
+        if (dist < smallest_distance) {
+          smallest_distance = dist;
+          *closest = p;
+        }
       }
     }
   }
