@@ -1,6 +1,6 @@
-// #include "../src/hexmap/enums.hpp"
-// #include "../src/hexmap/icosahedron.hpp"
-// #include "../src/hexmap/point3.hpp"
+// #include "../src/enums.hpp"
+// #include "../src/icosahedron.hpp"
+// #include "../src/point3.hpp"
 // #include <iostream>
 
 // #define GLFW_INCLUDE_VULKAN // or point to vulkan.h here

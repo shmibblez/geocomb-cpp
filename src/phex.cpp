@@ -73,7 +73,7 @@ Phex::all_phex_centers(Icosahedron::all_icosahedron_points all_points) {
 // bounds)
 std::vector<GPoint3> Phex::not_lazy_surrounding_points(
     Icosahedron::all_icosahedron_points all_points, GPoint3 p) {
-  if (p.is_vert) {
+  if (p.is_pc) {
     // north, return row
     if (p.row == 0) {
       return all_points[1];
@@ -183,7 +183,7 @@ std::vector<GPoint3> Phex::not_lazy_surrounding_points(
     r_cent.reset(&all_points[p.row][right_indx]);
     r_belo.reset(&all_points[p.row + 1][p.col]);
     l_belo.reset(&all_points[p.row + 1][left_indx]);
-    if (p.is_vert) {
+    if (p.is_pc) {
       return {*l_cent, *r_abov, *r_cent, *r_belo, *l_belo};
     } else {
       return {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo};
@@ -200,7 +200,7 @@ std::vector<GPoint3> Phex::not_lazy_surrounding_points(
     r_cent.reset(&all_points[p.row][right_indx]);
     r_belo.reset(&all_points[p.row + 1][p.col - offset_top]);
     l_belo.reset(&all_points[p.row + 1][left_indx - offset_top]);
-    if (p.is_vert) {
+    if (p.is_pc) {
       return {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo};
     } else {
       return {*l_cent, *l_abov, *r_abov, *r_cent, *r_belo, *l_belo};

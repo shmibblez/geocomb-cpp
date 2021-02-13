@@ -9,9 +9,9 @@
 using std::sqrt;
 
 GPoint3::GPoint3(double x, double y, double z, int res, int row, int col,
-                 ico::map_orientation mo, ico::rotation_method rm, bool is_vert,
+                 ico::map_orientation mo, ico::rotation_method rm, bool is_pc,
                  int tri_num)
-    : Point3::Point3(x, y, z, is_vert, tri_num), res(res), row(row), col(col) {}
+    : Point3::Point3(x, y, z, is_pc, tri_num), res(res), row(row), col(col) {}
 
 GPoint3::GPoint3()
     : Point3::Point3(std::numeric_limits<double>::infinity(),
@@ -75,8 +75,8 @@ void Quaternion::multiply(const Quaternion &q) {
   w = w * q.w - a.dot(b);
 }
 
-Point3::Point3(double x, double y, double z, bool is_vert, int tri_num)
-    : x(x), y(y), z(z), is_vert(is_vert), tri_num(tri_num) {}
+Point3::Point3(double x, double y, double z, bool is_pc, int tri_num)
+    : x(x), y(y), z(z), is_pc(is_pc), tri_num(tri_num) {}
 
 Point3::~Point3() {}
 
@@ -219,7 +219,7 @@ Point3::closest_point_2d(std::vector<std::vector<GPoint3>> &points_2d) const {
 
   for (std::vector<GPoint3> &points : points_2d) {
     for (GPoint3 &p : points) {
-      if (p.is_vert) {
+      if (p.is_pc) {
         dist = this->distance(p);
         if (dist < smallest_distance) {
           smallest_distance = dist;
@@ -269,11 +269,11 @@ std::vector<Point3> Point3::all_side_points_gnomonic(const Point3 &above,
   Point3 A = above;
   A.unit();
   A.mult_by(magH);
-  A.is_vert = true;
+  A.is_pc = true;
   Point3 B = below;
   B.unit();
   B.mult_by(magH);
-  B.is_vert = true;
+  B.is_pc = true;
   // distance between A and B
   const double dist = A.distance(B);
   const double dist_unit = dist / nd;
@@ -342,11 +342,11 @@ Point3::lazy_side_points_gnomonic(const Triangle &tri, const int center,
     Point3 A = top;
     A.unit();
     A.mult_by(magH);
-    A.is_vert = true;
+    A.is_pc = true;
     Point3 B = bot;
     B.unit();
     B.mult_by(magH);
-    B.is_vert = true;
+    B.is_pc = true;
     const double dist = A.distance(B);
     const double dist_unit = dist / nd;
 

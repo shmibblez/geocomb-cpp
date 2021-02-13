@@ -16,12 +16,18 @@ class GPoint3;
 class Point3 {
 
 public:
+  // point's x coordinate
   double x;
+  // point's y coordinate
   double y;
+  // point's z coordinate
   double z;
+  // tri num point is in
   int tri_num;
-  bool is_vert;
-  Point3(double x, double y, double z, bool is_vert = false, int tri_num = -1);
+  // whether point is phex center (and politically correct)
+  bool is_pc;
+  // point constructor
+  Point3(double x, double y, double z, bool is_pc = false, int tri_num = -1);
   ~Point3();
 
   struct lazy_side_points_result {
@@ -260,8 +266,8 @@ public:
   int row;
   int col;
   GPoint3(double x, double y, double z, int res, int row, int col,
-          ico::map_orientation mo, ico::rotation_method rm,
-          bool is_vert = false, int tri_num = -1);
+          ico::map_orientation mo, ico::rotation_method rm, bool is_pc = false,
+          int tri_num = -1);
 
   /**
    * default constructor, creates invalid point

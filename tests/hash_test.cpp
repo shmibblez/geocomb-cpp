@@ -1,6 +1,6 @@
-#include "../src/hexmap/enums.hpp"
-#include "../src/hexmap/icosahedron.hpp"
-#include "../src/hexmap/point3.hpp"
+#include "../src/enums.hpp"
+#include "../src/icosahedron.hpp"
+#include "../src/point3.hpp"
 #include <iostream>
 
 int main() {
@@ -20,7 +20,7 @@ int main() {
 
   lat = -70;
   lon = 179;
-  res = 144;
+  res = 144000;
 
   std::cout << "\n\nlat: " + std::to_string(lat)
             << ", lon: " + std::to_string(lon)
@@ -45,6 +45,7 @@ int main() {
 // no-rounding flags, or use long double
 
 //.
-// FIXME: not working for coords (doesn't match with hexmap node hash)
-// lat  |  lon  |  res
-// -70  |  179  |  144000
+// FIXME: not working for coords (doesn't match with hexmap-node hash), most
+// likely due to rounding errors
+//
+// lat  |  lon  |  res -70  |  179  |  144000 & 144

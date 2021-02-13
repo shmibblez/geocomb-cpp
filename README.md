@@ -1,29 +1,32 @@
+# geocomb-cpp
+
 # This is a c++ version of the npm package hexmap
 
 so it can be easily used in other platforms with a single core code base
 
-the idea is to use <del>open-gl</del> vulkan instead of p5js as I was doing with the typescript version for seeing if everything works. This will probably eventually be done since I also want to learn some <del>open-gl</del> vulkan, and this seems like the perfect project. Anyway, I'll be working on that, hopefully it won't be too complicated.
+the original plan was to use vulkan instead of p5js as I was doing with the typescript version for seeing if everything works, but I'll work on this later since I want to learn vulkan properly, and I'll need to dedicate some time to do that. Instead I'll be working on napi version that relies on this library, geocomb-cpp.
+
+This library used to be called hexmap, but since there are a couple of 2d hexagon generating libraries with similar names (in npm), and considering hexmap should be in beta but is in version 2 already (first package, wasn't really sure what I was doing), I'm going to mark hexmap as deprecated, and start fresh with geocomb (proper versioning). Geocomb comes from the combination of the words Geography and Honeycomb. Honeycomb because they're made up of hexagons, and they also look pretty cool.
 
 ## project structure:
 
-- all hexmap code goes in src/
-- /src/hexmap/ contains all code hexmap needs to work (no graphics)
-- /src/draw/ contains all code needed to draw hexagons, points, vectors, etc
-- /tests/ contains multiple programs (each with with their own main()) that each do different things. For example, /tests/draw_test.cpp draws components to make sure /src/hexmap functions are working properly and accurately. I'm also thinking about making a test that generates a couple hundred hashes from random points to see if anything crashes, and another test for each icosahedron triangle that tests key points; if each one generates a proper hash point (position is good, it's accurate), it should work for all points (here multiple resolutions would be tested, but if it works for the first 50 or so it should work for all of them up to the point where rounding error and number resolution (int, double) becomes a problem).
-- that's pretty much it for now, this should be up and running in a couple time periods, depends on how long it takes me to learn some <del>open-gl</del> vulkan.
+- all geocomb code goes in ./src/
+- ./src/ contains all code hexmap needs to work (no graphics)
+- ./tests/ contains multiple programs (each with with their own main()) that each do different things. For example, /tests/draw_test.cpp will eventually draw components to make sure /./src/ functions are working properly and accurately, might have to make an app first with vulkan first though. I'm also thinking about making a test that generates a couple hundred hashes from random points to see if anything crashes, and another test for each icosahedron triangle that tests key points; if each one generates a proper hash point (position is good, it's accurate), it should work for all points (here multiple resolutions would be tested, but if it works for the first 50 or so it should work for all of them up to the point where rounding error and number resolution (int, double) becomes a problem).
+- that's pretty much it for now, although I was going to learn vulkan, and then draw points, it seems pretty complicated, or something that I'll need to dedicate some time to learn properly, so I'll do that when I have some quality free time. What I'm planning on doing instead is just make node version that uses node napi, and draw with p5js since that's way simpler.
 
 ## important notes
 
 - to build test need to have file be open (from /tests/ or any file with main()) and either (shift-command-B) or Terminal->Run Build Task to well, run build task
-- in chexmap (c++ version of hexmap), icosahedron class contains static methods. In js version, a wrapper Icosahedron object with wrapper instance methods calls c++ static icosahedron functions, and stores variables (resolution, map orientation, and rotation method) for ease of use.
-- hash is returned through hash_properties struct, encoding and decoding needs to be implemented by you, the reader, or someone on your team. This is because there are multiple different ways to encode/decode, so you should use one that works best for your application. In the future I might add some default ones, but I was messing around with converting hash string to int and there were some collisions so, this might be added but it's not a priority.
+- in geocomb (c++ version of hexmap), icosahedron obj is created. In node version, there will be wrapper obj that stores Icosahedron info like rotation method, map orientation, tris, etc.
+- hash is returned through hash_properties struct, encoding and decoding needs to be implemented by you or your team. This is because there are multiple different ways to encode/decode, so you should use one that works best for your application. In the future I might add some default ones, but I was messing around with converting hash string to int and there were some collisions so, this will probably be added eventually but it's not a priority.
 
 ## compatibility notes (with dart & js)
 
 ### general
 
 - node:
-  - will have ts wrapper that interacts with node-addon-api, and node-addon-api will call c++ chexmap
+  - will have ts wrapper that interacts with node-addon-api, and node-addon-api will call c++ geocomb
   - node-addon-api interface will store static icosahedron object, and ts wrapper will have icosahedron class. ts icosahedron has getters and setters, and will interact with c++ through node-addon-api static icosahedron obj and its instance methods. Triangles, Points, & their arrays can be converted from c++ with NAPI, but use with getters & setters since need to be translated
 - dart:
   - will have dart wrapper that wraps c wrapper of c++ library
