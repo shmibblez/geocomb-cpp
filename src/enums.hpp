@@ -3,18 +3,19 @@
 #ifndef ENUMS_HPP
 #define ENUMS_HPP
 
-namespace tri {
+class tri {
 
-enum class pointing { UP, DOWN, NA };
-enum class position { TOP, CENTER, BOT, NA };
+public:
+  enum class pointing { UP, DOWN, NA };
+  enum class position { TOP, CENTER, BOT, NA };
 
 }; // namespace tri
 
-namespace ico {
+class ico {
 
-enum hash_type { rowCol, nested };
-enum map_orientation { ECEF, dymaxion };
-enum rotation_method { gnomonic, quaternion };
+public:
+  enum map_orientation { ECEF, dymaxion };
+  enum rotation_method { gnomonic, quaternion };
 
 }; // namespace ico
 

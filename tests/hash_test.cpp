@@ -5,8 +5,7 @@
 
 int main() {
   Icosahedron ico =
-      Icosahedron(ico::map_orientation::ECEF, ico::rotation_method::gnomonic,
-                  ico::hash_type::rowCol);
+      Icosahedron(ico::map_orientation::ECEF, ico::rotation_method::gnomonic);
 
   int lat, lon;
   unsigned int res;
@@ -21,6 +20,9 @@ int main() {
   lat = -70;
   lon = 179;
   res = 144000;
+
+  std::cout << "sizeof double: " << sizeof(double) << "\n";
+  std::cout << "sizeof long double: " << sizeof(long double) << "\n";
 
   std::cout << "\n\nlat: " + std::to_string(lat)
             << ", lon: " + std::to_string(lon)

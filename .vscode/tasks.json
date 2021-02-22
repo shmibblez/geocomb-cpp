@@ -6,6 +6,7 @@
       "label": "C/C++: clang++ build active file",
       "command": "/usr/local/Cellar/llvm/11.0.0_1/bin/clang++", // "/usr/bin/clang++", "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++", "/usr/bin/g++",
       "args": [
+        // "-v",
         "-std=c++17",
         "-stdlib=libc++",
 
@@ -21,13 +22,10 @@
         // "-includes",
         // "${workspaceFolder}/src/calc_percent.cpp",
         // "${workspaceFolder}/src/constants.cpp",
-        // "${workspaceFolder}/src/enums.hpp",
-        // "${workspaceFolder}/src/enums.cpp",
         // "${workspaceFolder}/src/icosahedron.cpp",
         // "${workspaceFolder}/src/phex.cpp",
         // "${workspaceFolder}/src/point3.cpp",
         // "${workspaceFolder}/src/triangle.cpp",
-        // TODO: try adding flags for strict math so follows IEEE754 (no rounding, unsafe operations, etc.)
 
         "-include",
         "${workspaceFolder}/src/**.cpp",
@@ -48,3 +46,5 @@
     }
   ]
 }
+
+// TODO: try adding flags for strict math so follows IEEE754 (no rounding, unsafe operations, etc.)

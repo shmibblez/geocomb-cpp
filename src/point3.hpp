@@ -17,17 +17,18 @@ class Point3 {
 
 public:
   // point's x coordinate
-  double x;
+  long double x;
   // point's y coordinate
-  double y;
+  long double y;
   // point's z coordinate
-  double z;
+  long double z;
   // tri num point is in
   int tri_num;
   // whether point is phex center (and politically correct)
   bool is_pc;
-  // point constructor
-  Point3(double x, double y, double z, bool is_pc = false, int tri_num = -1);
+  // point long double
+  Point3(long double x, long double y, long double z, bool is_pc = false,
+         int tri_num = -1);
   ~Point3();
 
   struct lazy_side_points_result {
@@ -48,15 +49,15 @@ public:
 
   /**
    * angle between vectors (origin, this) and (origin, p) */
-  double angle_between(const Point3 &p) const;
+  long double angle_between(const Point3 &p) const;
   /**
    * @param around vec to rotate around -> vec is from origin to point
    * @param rad rads to rotate
    * @note modifies obj */
-  void rotate(const Point3 &around, const double &rad);
+  void rotate(const Point3 &around, const long double &rad);
   /**
    * magnitude from origin to point */
-  double mag() const;
+  long double mag() const;
   /**
    * add another vector
    * !-> modifies obj */
@@ -67,7 +68,7 @@ public:
   void subtract(const Point3 &p);
   /**
    * dot product */
-  double dot(const Point3 &p) const;
+  long double dot(const Point3 &p) const;
   /**
    * cross product
    * !-> modifies obj */
@@ -79,14 +80,14 @@ public:
   /**
    * multiply by scalar
    * !-> modifies obj */
-  void mult_by(const double num);
+  void mult_by(const long double num);
   /**
    * divide by scalar
    * !-> modifies obj */
-  void div_by(const double num);
+  void div_by(const long double num);
   /**
    * distance between vectors */
-  double distance(const Point3 &p) const;
+  long double distance(const Point3 &p) const;
   /**
    * move point to be on sphere (multiply unit vec by radius) */
   void spheriphy();
@@ -111,7 +112,7 @@ public:
   /**
    * rotates point around y axis !-> modifies obj
    * @param rads how many radians to rotate point */
-  void rotate_around_y(double rads);
+  void rotate_around_y(long double rads);
 
   /**
    * GNOMONIC POINT GENERATION
@@ -265,12 +266,12 @@ public:
   int res;
   int row;
   int col;
-  GPoint3(double x, double y, double z, int res, int row, int col,
-          ico::map_orientation mo, ico::rotation_method rm, bool is_pc = false,
-          int tri_num = -1);
+  GPoint3(long double x, long double y, long double z, int res, int row,
+          int col, ico::map_orientation mo, ico::rotation_method rm,
+          bool is_pc = false, int tri_num = -1);
 
   /**
-   * default constructor, creates invalid point
+   * default, creates invalid point
    **/
   GPoint3();
 
@@ -287,21 +288,21 @@ public:
    * generate point from coordinates
    * @param lat latitude in degrees
    * @param lon longitude in degrees */
-  static GPoint3 from_coordinates(double lat, double lon);
+  static GPoint3 from_coordinates(long double lat, long double lon);
 };
 
 class Quaternion : public Point3 {
 
 public:
-  double w;
-  Quaternion(double x, double y, double z, double w);
+  long double w;
+  Quaternion(long double x, long double y, long double z, long double w);
 
   /**
    * convert to unit quaternion */
   void unit();
   /**
    * get quaternion magnitude */
-  double mag();
+  long double mag();
   /**
    * multiply with another quaternion
    * @note modifies obj */

@@ -17,10 +17,8 @@ public:
   const std::vector<Triangle> tris;
   const ico::map_orientation mo;
   const ico::rotation_method rm;
-  const ico::hash_type ht;
   Icosahedron(ico::map_orientation orientation = ico::map_orientation::ECEF,
-              ico::rotation_method rotation = ico::rotation_method::gnomonic,
-              ico::hash_type ht = ico::hash_type::rowCol);
+              ico::rotation_method rotation = ico::rotation_method::gnomonic);
 
   typedef std::vector<std::vector<GPoint3>> all_icosahedron_points;
   typedef std::vector<std::vector<GPoint3>> lazy_icosahedron_points;
@@ -31,7 +29,6 @@ public:
     int col;
     ico::rotation_method rm;
     ico::map_orientation mo;
-    ico::hash_type ht;
   };
 
   /**
@@ -62,10 +59,8 @@ public:
    * generate point from coordinates (degrees)
    * @param lat latitude
    * @param lon longitude */
-  Point3 point_from_coords(double lat, double lon) const;
+  Point3 point_from_coords(long double lat, long double lon) const;
 
-  // TODO: generate hash here, in js version it's in Point3, point_from_coords
-  // is also in Point3 in js version
   /**
    * @param p point to generate hash for
    * @param res resolution

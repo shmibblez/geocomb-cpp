@@ -6,7 +6,7 @@ using std::sqrt;
 
 int hexmapf::num_divisions(int resolution) { return resolution * 3; };
 
-bool hexmapf::equal_enough(double n1, double n2, int places) {
+bool hexmapf::equal_enough(long double n1, long double n2, int places) {
   int mult = pow(10, places);
   long left = round(n1 * mult);
   long right = round(n2 * mult);
@@ -22,7 +22,9 @@ int hexmapf::round_up(const int num, const int mult) {
   return (trunc(num / mult) + 1) * mult;
 }
 
-double hexmapf::deg_2_rad(double deg) { return deg * (constants::PI / 180.0); };
+long double hexmapf::deg_2_rad(long double deg) {
+  return deg * (constants::PI / 180.0);
+};
 
 int hexmapf::closest_even_num(const int n) {
   const bool is_even = n % 2 == 0;

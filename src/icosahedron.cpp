@@ -8,13 +8,25 @@
 
 #include <iostream>
 
+// TODO:
+// take a look at geocomb-node build warnings & fix them
+// also take a look at geocomb-node readme (TODO section)
+//
+// check differences between geocomb-node & geocomb-cpp, make sure imports the
+// same (copy these over there)
+//
+// IMPORTANT: CalcPercent is namespace for some reason, make sure it's a class
+//
+// once geocomb-cpp is updated, copy files into geocomb-node again (except for
+// icosahedron.hpp & icosahedron.cpp)
+
 using std::cos;
 using std::sin;
 using std::trunc;
 
 Icosahedron::Icosahedron(ico::map_orientation orientation,
-                         ico::rotation_method rotation, ico::hash_type ht)
-    : mo(orientation), rm(rotation), ht(ht), tris(Icosahedron::triangles()) {}
+                         ico::rotation_method rotation)
+    : tris(Icosahedron::triangles()), mo(orientation), rm(rotation) {}
 
 std::string Icosahedron::map_orientation_key(ico::map_orientation mo) {
   return std::vector<std::string>({"e", "d"})[mo];
@@ -29,16 +41,16 @@ std::string Icosahedron::rotation_method_key(ico::rotation_method rm) {
  * @returns vector of icosahedron triangles
  */
 std::vector<Triangle> Icosahedron::triangles() {
-  const double gr = constants::golden_ratio;
-  const double r = constants::radius;
-  const double factor = r / sqrt(gr * gr + 1.0);
+  const long double gr = constants::golden_ratio;
+  const long double r = constants::radius;
+  const long double factor = r / sqrt(gr * gr + 1.0);
 
-  const double &_1 = factor;
-  const double _gr = gr * factor;
+  const long double &_1 = factor;
+  const long double _gr = gr * factor;
 
   // rotate all base points so north pole aligns with z axis (this is angle
   // between vectors)
-  const double rads = -acos(gr / sqrt(1.0 + gr * gr));
+  const long double rads = -acos(gr / sqrt(1.0 + gr * gr));
   /**
    *     how points are numbered
    *        N       N       N       N       N           - all top pent tris
@@ -183,7 +195,7 @@ Triangle Icosahedron::triangle(const int indx) {
   return Icosahedron::triangles()[indx];
 }
 
-Point3 Icosahedron::point_from_coords(double lat, double lon) const {
+Point3 Icosahedron::point_from_coords(long double lat, long double lon) const {
   if (!(lat <= 90 && lat >= -90)) {
     throw std::invalid_argument("lat must be between -90 and 90");
   }
@@ -192,10 +204,10 @@ Point3 Icosahedron::point_from_coords(double lat, double lon) const {
   }
   lat = hexmapf::deg_2_rad(lat);
   lon = hexmapf::deg_2_rad(lon);
-  const double r = constants::radius;
-  const double x = r * cos(lat) * cos(lon);
-  const double y = r * cos(lat) * sin(lon);
-  const double z = r * sin(lat);
+  const long double r = constants::radius;
+  const long double x = r * cos(lat) * cos(lon);
+  const long double y = r * cos(lat) * sin(lon);
+  const long double z = r * sin(lat);
   return Point3(x, y, z);
 }
 
@@ -215,19 +227,18 @@ Icosahedron::hash_properties Icosahedron::hash(Point3 p, int res) {
             << "\n  row: " << cp.row << "\n  col: " << cp.col
             << "\n  res: " << cp.res << "\n  isVert: " << cp.is_pc << "\ns";
 
-  return Icosahedron::hash_properties{.res = res,
-                                      .row = cp.row,
-                                      .col = cp.col,
-                                      .rm = this->rm,
-                                      .mo = this->mo,
-                                      .ht = this->ht};
+  return Icosahedron::hash_properties{
+      .res = res,
+      .row = cp.row,
+      .col = cp.col,
+      .rm = this->rm,
+      .mo = this->mo,
+  };
 }
 
 std::vector<std::vector<GPoint3>>
 Icosahedron::lazy_points_around(Point3 p, int res) const {
-  std::cout << "\n>>>Icosahedron::lazy_points_around\n";
   const Triangle tri = this->containing_triangle(p);
-  std::cout << "containing tri num: " << std::to_string(tri.num) << "\n";
   const int nd = hexmapf::num_divisions(res);
   // points and lazy range start indexes in relation to tri.C
   Triangle::lazy_points_around_result tri_points_around =
@@ -251,10 +262,10 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
     // TODO: test if works, point numbering and pushing to vecs
     std::vector<std::vector<GPoint3>> indexed_points;
     const int row_off = lower_vert;
-    for (int r = 0; r < points.size() && points[0].size() > 0; r++) {
+    for (unsigned int r = 0; r < points.size() && points[0].size() > 0; r++) {
       const int row = row_off + r;
       indexed_points.push_back(std::vector<GPoint3>());
-      for (int c = 0; c < points[r].size(); c++) {
+      for (unsigned int c = 0; c < points[r].size(); c++) {
         int col = (lower_vert + r) * tri.num + lower_horz + c;
         if (col == row * 5) {
           col = 0;
@@ -266,7 +277,6 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
         indexed_points[r].push_back(new_point);
       }
     }
-    std::cout << "<<<Icosahedron::lazy_points_around\n\n";
     return indexed_points;
   };
   // index center up
@@ -278,10 +288,10 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
     const int row_off = nd + lower_vert;
     const int col_off =
         nd * (num_tris_before / 2) + (nd - lower_vert) + lower_horz;
-    for (int r = 0; r < points.size() && points[r].size() > 0; r++) {
+    for (unsigned int r = 0; r < points.size() && points[r].size() > 0; r++) {
       const int row = row_off + r;
       indexed_points.push_back(std::vector<GPoint3>());
-      for (int c = 0; c < points[r].size(); c++) {
+      for (unsigned int c = 0; c < points[r].size(); c++) {
         int col = col_off + c - r;
         if (col == nd * 5) {
           col = 0;
@@ -303,10 +313,10 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
     const int num_tris_before = hexmapf::closest_even_num(tri.num - 5);
     const int row_off = nd + lower_vert;
     const int col_off = nd * (num_tris_before / 2);
-    for (int r = 0; r < points.size() && points[r].size() > 0; r++) {
+    for (unsigned int r = 0; r < points.size() && points[r].size() > 0; r++) {
       const int row = row_off + r;
       indexed_points.push_back(std::vector<GPoint3>());
-      for (int c = 0; c < points[r].size(); c++) {
+      for (unsigned int c = 0; c < points[r].size(); c++) {
         int col = col_off + nd * 2 - row - lower_horz - c;
         if (col == nd * 5) {
           col = 0;
@@ -326,10 +336,10 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
                              &tri]() -> std::vector<std::vector<GPoint3>> {
     std::vector<std::vector<GPoint3>> indexed_points;
     const int row_off = nd * 2 + lower_vert;
-    for (int r = 0; r < points.size() && points[r].size() > 0; r++) {
+    for (unsigned int r = 0; r < points.size() && points[r].size() > 0; r++) {
       const int row = row_off + r;
       indexed_points.push_back(std::vector<GPoint3>());
-      for (int c = 0; c < points[r].size(); c++) {
+      for (unsigned int c = 0; c < points[r].size(); c++) {
         int col = (nd - lower_vert - r) * (tri.num - 15 + 1) - lower_horz - c;
         if (col == (nd * 3 - row) * 5) {
           col = 0;
@@ -484,14 +494,14 @@ Icosahedron::all_icosahedron_points Icosahedron::all_points(int res) const {
     }
     };
     for (int fl = 0; fl < range; fl++) {
-      if (points.size() < offset + fl) {
+      if ((signed)points.size() < offset + fl) {
         // since tris start from top to bottom, this shouldn't skip any indices
         // -> adding in order, should do the same as js version (original)
         points.push_back(std::vector<GPoint3>());
       }
       Point3 popped = ps[fl].back();
       ps[fl].pop_back();
-      for (int sl = 0; sl < ps[fl].size(); sl++) {
+      for (unsigned int sl = 0; sl < ps[fl].size(); sl++) {
         // adds gpoint3, storing indexes (for referencing other points)
         points[offset + fl].push_back(
             GPoint3(ps[fl][sl].x, ps[fl][sl].y, ps[fl][sl].z, res, offset + fl,
@@ -527,8 +537,8 @@ Phex Icosahedron::not_lazy_containing_phex(Point3 p, int res) const {
   const std::vector<Phex> phexes = Phex::all_phexes(all_points);
 
   std::unique_ptr<Phex> closest_phex;
-  double dist;
-  double smallest_dist = constants::radius * 2;
+  long double dist;
+  long double smallest_dist = constants::radius * 2;
   for (Phex phex : phexes) {
     dist = p.distance(phex.center);
     if (dist < smallest_dist) {

@@ -4,7 +4,7 @@
 
 so it can be easily used in other platforms with a single core code base
 
-the original plan was to use vulkan instead of p5js as I was doing with the typescript version for seeing if everything works, but I'll work on this later since I want to learn vulkan properly, and I'll need to dedicate some time to do that. Instead I'll be working on napi version that relies on this library, geocomb-cpp.
+the original plan was to use vulkan instead of p5js as I was doing with the typescript version for seeing if everything works, but I'll work on this later since I want to learn vulkan properly, and I'll need to dedicate some time to do that. Instead I'll be working on napi version that relies on this library, geocomb-cpp, and draw everything with p5js.
 
 This library used to be called hexmap, but since there are a couple of 2d hexagon generating libraries with similar names (in npm), and considering hexmap should be in beta but is in version 2 already (first package, wasn't really sure what I was doing), I'm going to mark hexmap as deprecated, and start fresh with geocomb (proper versioning). Geocomb comes from the combination of the words Geography and Honeycomb. Honeycomb because they're made up of hexagons, and they also look pretty cool.
 

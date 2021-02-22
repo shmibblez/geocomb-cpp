@@ -12,7 +12,7 @@ Phex::all_phexes(Icosahedron::all_icosahedron_points all_points) {
   // init phexes
   std::vector<Phex> phexes;
   // generate phexes from all points & phex centers
-  for (const GPoint3 c : centers) {
+  for (const GPoint3 &c : centers) {
     // first hex center index is -> row_num % 3
     phexes.push_back(Phex(Phex::not_lazy_surrounding_points(all_points, c), c));
   }
@@ -24,13 +24,14 @@ Phex::all_phex_centers(Icosahedron::all_icosahedron_points all_points) {
   const int tri_div_count = (all_points.size() - 1) / 3;
   std::vector<GPoint3> centers;
 
-  for (int fl = 0; fl < all_points.size(); fl++) {
+  for (unsigned int fl = 0; fl < all_points.size(); fl++) {
     // first hex center index is -> row_num % 3
     // const firstHexCenterIndx = fl % 3;
-    int first_hex_center_indx;
-    if (fl < tri_div_count) {
+    int first_hex_center_indx = -1;
+    if ((signed)fl < tri_div_count) {
+      first_hex_center_indx = hexmapf::round_up(fl, 3) - fl;
       int count = 0;
-      for (int sl = 0; sl < all_points[fl].size(); sl++) {
+      for (unsigned int sl = 0; sl < all_points[fl].size(); sl++) {
         if (sl % fl == 0) {
           // if at triangle edge, reset count
           count = first_hex_center_indx;
@@ -43,10 +44,10 @@ Phex::all_phex_centers(Icosahedron::all_icosahedron_points all_points) {
         }
         count--;
       }
-    } else if (fl > tri_div_count * 2) {
+    } else if ((signed)fl > tri_div_count * 2) {
       first_hex_center_indx = fl % 3;
       int count = 0;
-      for (int sl = 0; sl < all_points[fl].size(); sl++) {
+      for (unsigned int sl = 0; sl < all_points[fl].size(); sl++) {
         if (sl % (hexmapf::round_up(fl, tri_div_count) - fl) == 0) {
           count = first_hex_center_indx;
         }
@@ -54,12 +55,13 @@ Phex::all_phex_centers(Icosahedron::all_icosahedron_points all_points) {
           // if count === 0, it means at triangle center, add point and reset
           // counter
           centers.push_back(all_points[fl][sl]);
+          count = 3;
         }
         count--;
       }
     } else {
       first_hex_center_indx = fl % 3;
-      for (int sl = first_hex_center_indx; sl < all_points[fl].size();
+      for (unsigned int sl = first_hex_center_indx; sl < all_points[fl].size();
            sl += 3) {
         centers.push_back(all_points[fl][sl]);
       }
@@ -78,13 +80,13 @@ std::vector<GPoint3> Phex::not_lazy_surrounding_points(
     if (p.row == 0) {
       return all_points[1];
     }
-    if (p.row == all_points.size() - 1) {
+    if (p.row == (signed)all_points.size() - 1) {
       return all_points[all_points.size() - 2];
     }
   }
   int left_indx = p.col - 1;
   int right_indx = p.col + 1;
-  if (all_points[p.row].size() <= right_indx) {
+  if ((signed)all_points[p.row].size() <= right_indx) {
     right_indx = 0;
   }
   if (left_indx < 0) {
@@ -117,7 +119,7 @@ std::vector<GPoint3> Phex::not_lazy_surrounding_points(
     } else {
       // if point not on edge, do stuff
       int r_abov_indx = p.col - offset;
-      if (r_abov_indx >= all_points[p.row - 1].size()) {
+      if (r_abov_indx >= (signed)all_points[p.row - 1].size()) {
         r_abov_indx = 0;
       }
       l_cent.reset(&all_points[p.row][left_indx]);
@@ -160,7 +162,7 @@ std::vector<GPoint3> Phex::not_lazy_surrounding_points(
     } else {
       // if point not on edge, do stuff
       int r_belo_indx = p.col - offset;
-      if (r_belo_indx >= all_points[p.row + 1].size()) {
+      if (r_belo_indx >= (signed)all_points[p.row + 1].size()) {
         r_belo_indx = 0;
       }
       l_cent.reset(&all_points[p.row][left_indx]);

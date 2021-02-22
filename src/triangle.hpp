@@ -3,6 +3,7 @@
 #ifndef TRIANGLE_HPP
 #define TRIANGLE_HPP
 
+#include "calc_percent.hpp"
 #include "enums.hpp"
 #include "icosahedron.hpp"
 #include "point3.hpp"
@@ -75,7 +76,7 @@ public:
 private:
   /**
    * @returns triangle area */
-  double area() const;
+  long double area() const;
 };
 
 #endif

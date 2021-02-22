@@ -1,6 +1,6 @@
 #pragma once
-#ifndef CALC_PERCENT_HPP
-#define CALC_PERCENT_HPP
+// #ifndef CALC_PERCENT_HPP
+// #define CALC_PERCENT_HPP
 
 #include "icosahedron.hpp"
 #include "point3.hpp"
@@ -9,11 +9,12 @@ class Triangle;
 
 namespace CalcPercent {
 
+// public:
 struct calc_percent_result {
   // vertical percent
-  double percent_CA;
+  long double percent_CA;
   // horizontal percent
-  double percent_CB;
+  long double percent_CB;
 };
 
 struct vec_side_components_result {
@@ -21,11 +22,11 @@ struct vec_side_components_result {
   Point3 vec_CB;
 };
 
-// TODO: extern functions instead of making them static (will get copied a lot,
-// even though only used in Triangle.cpp - i think)
-
-static vec_side_components_result vec_side_components(const Triangle &tri,
-                                                      const Point3 &i);
+/**
+ * calculates percent of point along tri sides CA and CB
+ **/
+static CalcPercent::vec_side_components_result
+vec_side_components(const Triangle &tri, const Point3 &i);
 
 /**
  * calc percent of p along tri sides
@@ -42,7 +43,6 @@ static calc_percent_result gnomonic(const Triangle &tri, const Point3 &p);
  * @returns percents along CA and CB
  **/
 static calc_percent_result quaternion(const Triangle &tri, const Point3 &p);
-
 }; // namespace CalcPercent
 
-#endif
+// #endif
