@@ -12,7 +12,7 @@ This library used to be called hexmap, but since there are a couple of 2d hexago
 
 - all geocomb code goes in ./src/
 - ./src/ contains all code hexmap needs to work (no graphics)
-- ./tests/ contains multiple programs (each with with their own main()) that each do different things. For example, /tests/draw_test.cpp will eventually draw components to make sure /./src/ functions are working properly and accurately, might have to make an app first with vulkan first though. I'm also thinking about making a test that generates a couple hundred hashes from random points to see if anything crashes, and another test for each icosahedron triangle that tests key points; if each one generates a proper hash point (position is good, it's accurate), it should work for all points (here multiple resolutions would be tested, but if it works for the first 50 or so it should work for all of them up to the point where rounding error and number resolution (int, double) becomes a problem).
+- ./tests/ contains multiple programs (each with with their own main()) that each do different things.
 - that's pretty much it for now, although I was going to learn vulkan, and then draw points, it seems pretty complicated, or something that I'll need to dedicate some time to learn properly, so I'll do that when I have some quality free time. What I'm planning on doing instead is just make node version that uses node napi, and draw with p5js since that's way simpler.
 
 ## important notes

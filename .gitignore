@@ -1,3 +1,4 @@
-/builds
-
-.DS_Store
+.vscode
+builds
+**/*.DS_Store
+**/*.o
