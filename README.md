@@ -17,8 +17,7 @@ This library used to be called hexmap, but since there are a couple of 2d hexago
 
 ## important notes
 
-- to build test need to have file be open (from /tests/ or any file with main()) and either (shift-command-B) or Terminal->Run Build Task to well, run build task
-- in geocomb (c++ version of hexmap), icosahedron obj is created. In node version, there will be wrapper obj that stores Icosahedron info like rotation method, map orientation, tris, etc.
+- to build just type in terminal `make [test name]`. Currently the only working test is hash_test
 - hash is returned through hash_properties struct, encoding and decoding needs to be implemented by you or your team. This is because there are multiple different ways to encode/decode, so you should use one that works best for your application. In the future I might add some default ones, but I was messing around with converting hash string to int and there were some collisions so, this will probably be added eventually but it's not a priority.
 
 ## compatibility notes (with dart & js)
