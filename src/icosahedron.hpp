@@ -4,11 +4,10 @@
 #define ICOSAHEDRON_HPP
 
 #include "enums.hpp"
+#include "point3.hpp"
+#include "triangle.hpp"
 #include <vector>
 
-class Triangle;
-class Point3;
-class GPoint3;
 class Phex;
 
 class Icosahedron {

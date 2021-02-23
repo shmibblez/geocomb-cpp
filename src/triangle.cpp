@@ -11,6 +11,89 @@ Triangle::Triangle(Point3 A, Point3 B, Point3 C, tri::pointing direction,
     : A(A), B(B), C(C), direction(direction), pos(pos), num(num), toAB(toAB),
       toBC(toBC), toCA(toCA){};
 
+Triangle::vec_side_components_result
+Triangle::vec_side_components(const Triangle &tri, const Point3 &i) {
+  Point3 u_CA = tri.A;
+  u_CA.subtract(tri.C);
+  u_CA.unit();
+  Point3 u_CB = tri.B;
+  u_CB.subtract(tri.C);
+  u_CB.unit();
+  Point3 CI = i;
+  CI.subtract(tri.C);
+
+  const long double beta = u_CA.angle_between(CI);
+  const long double alpha = CI.angle_between(u_CB);
+  const long double phi = constants::PI - beta - alpha;
+
+  // law of sines to find missing magnitudes & lengths
+  const long double mag_CI = CI.mag();
+  const long double mag_CB = (mag_CI * sin(beta)) / sin(phi);
+  const long double mag_CA = (mag_CI * sin(alpha)) / sin(phi);
+
+  Point3 vec_CA = u_CA;
+  vec_CA.mult_by(mag_CA);
+  Point3 vec_CB = u_CB;
+  vec_CB.mult_by(mag_CB);
+  return {.vec_CA = vec_CA, .vec_CB = vec_CB};
+}
+
+Triangle::calc_percent_result
+Triangle::calc_percent_gnomonic(const Point3 &p) const {
+  // const Triangle &tri = *this;
+  int precision = std::numeric_limits<long double>::max_digits10;
+
+  const long double r = constants::radius;
+  Point3 original_AB = this->B;
+  original_AB.subtract(this->A);
+
+  Point3 c_AB = original_AB;
+  c_AB.div_by(2.0);
+  c_AB.add(this->A);
+
+  Point3 cent = c_AB;
+  cent.subtract(this->C);
+  cent.mult_by(2.0 / 3.0);
+  cent.add(this->C);
+  cent.unit();
+  cent.mult_by(r);
+
+  const long double alpha = this->C.angle_between(cent);
+  const long double mag_cent = cent.mag();
+  const long double mag_h = mag_cent / cos(alpha);
+  Point3 A = this->A;
+  A.unit();
+  A.mult_by(mag_h);
+  Point3 B = this->B;
+  B.unit();
+  B.mult_by(mag_h);
+  Point3 C = this->C;
+  C.unit();
+  C.mult_by(mag_h);
+  const Triangle projected_tri = Triangle(A, B, C);
+  const Point3 projected_p = projected_tri.plane_intersection(p);
+
+  std::cout << "\nmag_h: " << mag_h << "\nmag_cent: " << mag_cent
+            << "\nalpha: " << alpha << "\ncos(alpha): " << cos(alpha) << "\n\n";
+
+  Triangle::vec_side_components_result components =
+      Triangle::vec_side_components(projected_tri, projected_p);
+
+  const long double mag_comp_CA = components.vec_CA.mag();
+  const long double mag_comp_CB = components.vec_CB.mag();
+  Point3 mag_temp = B;
+  mag_temp.subtract(A);
+  const long double mag = mag_temp.mag();
+
+  return {.percent_CA = mag_comp_CA / mag, .percent_CB = mag_comp_CB / mag};
+}
+
+Triangle::calc_percent_result
+Triangle::calc_percent_quaternion(const Point3 &p) const {
+  // throw std::logic_error("CalcPercent->quaternion not ready yet");
+  return {.percent_CA = -1, .percent_CB = -1};
+}
+
 std::vector<std::vector<Point3>>
 Triangle::all_points(int res, ico::map_orientation mo,
                      ico::rotation_method rm) const {
@@ -51,10 +134,10 @@ Triangle::lazy_points_around(Point3 &p, int res,
 
   const int nd = hexmapf::num_divisions(res);
   // calc side percents
-  const CalcPercent::calc_percent_result percents =
+  const Triangle::calc_percent_result percents =
       rotation == ico::rotation_method::gnomonic
-          ? CalcPercent::gnomonic(*this, p)
-          : CalcPercent::quaternion(*this, p);
+          ? this->calc_percent_gnomonic(p)
+          : this->calc_percent_quaternion(p);
 
   std::cout << "percents, percent_CA: " << std::to_string(percents.percent_CA)
             << ", percent_CB: " << std::to_string(percents.percent_CB) << "\n";

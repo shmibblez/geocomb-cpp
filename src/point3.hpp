@@ -5,7 +5,6 @@
 
 #include "constants.hpp"
 #include "enums.hpp"
-#include "icosahedron.hpp"
 #include <cmath>
 #include <limits>
 #include <vector>
