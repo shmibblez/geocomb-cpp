@@ -40,8 +40,7 @@ Triangle::vec_side_components(const Triangle &tri, const Point3 &i) {
 
 Triangle::calc_percent_result
 Triangle::calc_percent_gnomonic(const Point3 &p) const {
-  // const Triangle &tri = *this;
-  int precision = std::numeric_limits<long double>::max_digits10;
+  // int precision = std::numeric_limits<long double>::max_digits10;
 
   const long double r = constants::radius;
   Point3 original_AB = this->B;
@@ -90,13 +89,13 @@ Triangle::calc_percent_gnomonic(const Point3 &p) const {
 
 Triangle::calc_percent_result
 Triangle::calc_percent_quaternion(const Point3 &p) const {
-  // throw std::logic_error("CalcPercent->quaternion not ready yet");
-  return {.percent_CA = -1, .percent_CB = -1};
+  throw std::logic_error("CalcPercent->quaternion not ready yet");
+  // so don't get warning
+  return {.percent_CA = (p.x * 0) - 1, .percent_CB = -1};
 }
 
 std::vector<std::vector<Point3>>
-Triangle::all_points(int res, ico::map_orientation mo,
-                     ico::rotation_method rm) const {
+Triangle::all_points(int res, ico::rotation_method rm) const {
   // empty 2d vec
   std::vector<std::vector<Point3>> points;
 

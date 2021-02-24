@@ -355,7 +355,7 @@ Icosahedron::lazy_points_around(Point3 p, int res) const {
 }
 
 Triangle Icosahedron::containing_triangle(Point3 p) const {
-  for (const Triangle t : this->tris) {
+  for (const Triangle &t : this->tris) {
     if (t.contains_point(p)) {
 
       return t;
@@ -440,10 +440,10 @@ GPoint3 Icosahedron::parse_hash(Icosahedron::hash_properties hash) const {
 Icosahedron::all_icosahedron_points Icosahedron::all_points(int res) const {
   Icosahedron::all_icosahedron_points points;
   const int offset_amount = res * 3;
-  for (const Triangle t : this->tris) {
+  for (const Triangle &t : this->tris) {
     int offset;
     int range;
-    std::vector<std::vector<Point3>> ps = t.all_points(res, this->mo, this->rm);
+    std::vector<std::vector<Point3>> ps = t.all_points(res, this->rm);
     switch (t.pos) {
     case tri::position::TOP: {
       offset = 0;

@@ -68,7 +68,7 @@ public:
    * @param res resolution
    * @param rotation rotation method to generate points with
    * @return 2d std::vector of triangle's points for [res] */
-  std::vector<std::vector<Point3>> all_points(int res, ico::map_orientation mo,
+  std::vector<std::vector<Point3>> all_points(int res,
                                               ico::rotation_method rm) const;
   /**
    * @param p point to generate points arounmd

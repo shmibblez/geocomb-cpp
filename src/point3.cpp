@@ -11,7 +11,8 @@ using std::sqrt;
 GPoint3::GPoint3(long double x, long double y, long double z, int res, int row,
                  int col, ico::map_orientation mo, ico::rotation_method rm,
                  bool is_pc, int tri_num)
-    : Point3::Point3(x, y, z, is_pc, tri_num), res(res), row(row), col(col) {}
+    : Point3::Point3(x, y, z, is_pc, tri_num), res(res), row(row), col(col),
+      mo(mo), rm(rm) {}
 
 GPoint3::GPoint3()
     : Point3::Point3(std::numeric_limits<long double>::infinity(),
@@ -486,14 +487,14 @@ Point3::lazy_side_points_quaternion(const Triangle &tri, const int center,
                                     int lower, int upper) {
   const int nd = hexmapf::num_divisions(res);
   if (lower == -1) {
-    lower = 0;
+    lower = center - lazy_range;
   }
   if (lower < 0) {
     lower = 0;
   }
 
   if (upper == -1) {
-    upper = nd;
+    upper = center + lazy_range;
   }
   if (upper > nd) {
     upper = nd;
@@ -567,14 +568,14 @@ Point3::lazy_row_points_quaternion(const int center, const Point3 &left,
   }
 
   if (lower == -1) {
-    lower = 0;
+    lower = center - lazy_range;
   }
   if (lower < 0) {
     lower = 0;
   }
 
   if (upper == -1) {
-    upper = num_divisions;
+    upper = center + lazy_range;
   }
   if (upper > num_divisions || upper < 0) {
     upper = num_divisions;

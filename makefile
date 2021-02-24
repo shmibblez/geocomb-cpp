@@ -1,5 +1,5 @@
 CC=clang++
-flags=-std=c++17 -stdlib=libc++
+flags=-std=c++17 -stdlib=libc++ -Wall -Wextra
 
 hash_test: hash_test.o icosahedron.o triangle.o phex.o point3.o
 	mkdir -p builds

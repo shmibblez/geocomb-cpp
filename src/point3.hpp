@@ -265,6 +265,8 @@ public:
   int res;
   int row;
   int col;
+  ico::map_orientation mo;
+  ico::rotation_method rm;
   GPoint3(long double x, long double y, long double z, int res, int row,
           int col, ico::map_orientation mo, ico::rotation_method rm,
           bool is_pc = false, int tri_num = -1);
