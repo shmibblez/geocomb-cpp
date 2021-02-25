@@ -72,8 +72,9 @@ Triangle::calc_percent_gnomonic(const Point3 &p) const {
   const Triangle projected_tri = Triangle(A, B, C);
   const Point3 projected_p = projected_tri.plane_intersection(p);
 
-  std::cout << "\nmag_h: " << mag_h << "\nmag_cent: " << mag_cent
-            << "\nalpha: " << alpha << "\ncos(alpha): " << cos(alpha) << "\n\n";
+  // std::cout << "\nmag_h: " << mag_h << "\nmag_cent: " << mag_cent
+  //           << "\nalpha: " << alpha << "\ncos(alpha): " << cos(alpha) <<
+  //           "\n\n";
 
   Triangle::vec_side_components_result components =
       Triangle::vec_side_components(projected_tri, projected_p);
@@ -138,24 +139,15 @@ Triangle::lazy_points_around(Point3 &p, int res,
           ? this->calc_percent_gnomonic(p)
           : this->calc_percent_quaternion(p);
 
-  std::cout << "percents, percent_CA: " << std::to_string(percents.percent_CA)
-            << ", percent_CB: " << std::to_string(percents.percent_CB) << "\n";
+  // std::cout << "percents, percent_CA: " <<
+  // std::to_string(percents.percent_CA)
+  //           << ", percent_CB: " << std::to_string(percents.percent_CB) <<
+  //           "\n";
 
   // calculate percent of intersect component from C to A
   const int estimated_vert_center = this->direction == tri::pointing::UP
                                         ? round(nd - percents.percent_CA * nd)
                                         : round(percents.percent_CA * nd);
-  if (this->direction == tri::pointing::UP) {
-    std::cout << "tri pointing up, round(nd - percents.percent_CA * nd): "
-              << round(nd - percents.percent_CA * nd) << "\n";
-  } else {
-    std::cout << "\ntri pointing down, round(percents.percent_CA * nd): "
-              << round(percents.percent_CA * nd) << ", nd: " << nd
-              << ", inside round: " << percents.percent_CA * nd << "\n";
-  }
-
-  std::cout << "estimated_vert_center: "
-            << std::to_string(estimated_vert_center) << "\n";
 
   // lazy calculate points
   Point3::lazy_side_points_result side_point_result =
@@ -164,17 +156,9 @@ Triangle::lazy_points_around(Point3 &p, int res,
           : Point3::lazy_side_points_quaternion(*this, estimated_vert_center,
                                                 res);
 
-  // std::cout << "lazy side points gnomonic, lower_indx: "
-  //           << std::to_string(side_point_result.lower_indx) << "\n";
-
-  // replaced n with i
-  // int n = 0;
-
   std::vector<std::vector<Point3>> points;
 
   const int estimated_horz_center = round(percents.percent_CB * nd);
-  std::cout << "estimated_horz_center: "
-            << std::to_string(estimated_horz_center) << "\n";
   // while vertical points exist, generate points for their rows in range
   int lower_horz_bound;
   // not hit or miss like js hexmap, here lazy range starts from vec[0]
@@ -203,9 +187,6 @@ Triangle::lazy_points_around(Point3 &p, int res,
     // better way to set lower_horz_bound? only need last value...
     lower_horz_bound = row_points_result.lower_indx;
   }
-  std::cout << "start_vert: " << std::to_string(side_point_result.lower_indx)
-            << "\n";
-  std::cout << "start_horz: " << std::to_string(lower_horz_bound);
 
   return {.points = points,
           .start_vert = side_point_result.lower_indx,

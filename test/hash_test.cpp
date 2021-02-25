@@ -10,12 +10,12 @@ int main() {
   int lat, lon;
   unsigned int res;
 
-  // std::cout << "\ninsert point coords, lat: ";
-  // std::cin >> lat;
-  // std::cout << "lon: ";
-  // std::cin >> lon;
-  // std::cout << "res: ";
-  // std::cin >> res;
+  std::cout << "\ninsert point coords, lat: ";
+  std::cin >> lat;
+  std::cout << "lon: ";
+  std::cin >> lon;
+  std::cout << "res: ";
+  std::cin >> res;
 
   lat = -70;
   lon = 179;

@@ -8,9 +8,6 @@
 #include "triangle.hpp"
 #include <vector>
 
-// TODO: phex.hpp includes itself and while this is no prob thanks to include
-// guards (i think), remove and try to build, should be no problem
-
 class Phex;
 
 class Icosahedron {

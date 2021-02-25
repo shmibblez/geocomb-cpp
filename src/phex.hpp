@@ -4,7 +4,6 @@
 #define PHEX_HPP
 
 #include "icosahedron.hpp"
-#include "phex.hpp"
 #include "point3.hpp"
 #include <vector>
 
