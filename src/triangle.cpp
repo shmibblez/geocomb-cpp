@@ -1,8 +1,7 @@
 #include "triangle.hpp"
 #include "enums.hpp"
 
-#include <iostream>
-#include <string>
+// #include <string>
 
 using std::round;
 
@@ -123,7 +122,9 @@ Triangle::all_points(int res, ico::rotation_method rm) const {
                                               num_divs)
             : Point3::all_row_points_quaternion(left_points[x], right_points[x],
                                                 num_divs);
-    points.push_back(new_points);
+    points.push_back(rm == ico::rotation_method::gnomonic
+                         ? Point3::spherify1D(new_points)
+                         : new_points);
   }
   return points;
 }
@@ -140,8 +141,8 @@ Triangle::lazy_points_around(Point3 &p, int res,
           : this->calc_percent_quaternion(p);
 
   // std::cout << "percents, percent_CA: " <<
-  // std::to_string(percents.percent_CA)
-  //           << ", percent_CB: " << std::to_string(percents.percent_CB) <<
+  // percents.percent_CA
+  //           << ", percent_CB: " << percents.percent_CB <<
   //           "\n";
 
   // calculate percent of intersect component from C to A
@@ -183,7 +184,10 @@ Triangle::lazy_points_around(Point3 &p, int res,
                                                right, num_div)
             : Point3::lazy_row_points_quaternion(estimated_horz_center, left,
                                                  right, num_div);
-    points.push_back(row_points_result.row_points);
+
+    points.push_back(rotation == ico::rotation_method::gnomonic
+                         ? Point3::spherify1D(row_points_result.row_points)
+                         : row_points_result.row_points);
     // better way to set lower_horz_bound? only need last value...
     lower_horz_bound = row_points_result.lower_indx;
   }
@@ -199,11 +203,9 @@ Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
   // kind of hacky but works
   Point3::lazy_side_points_result vert_result =
       rotation == ico::rotation_method::gnomonic
-          ? Point3::lazy_side_points_gnomonic(*this, lower_vert, res,
-                                              constants::lazy_range, lower_vert,
-                                              lower_vert)
-          : Point3::lazy_side_points_quaternion(*this, lower_vert, res,
-                                                constants::lazy_range,
+          ? Point3::lazy_side_points_gnomonic(*this, lower_vert, res, 0,
+                                              lower_vert, lower_vert)
+          : Point3::lazy_side_points_quaternion(*this, lower_vert, res, 0,
                                                 lower_vert, lower_vert);
 
   const Point3 left = this->direction == tri::pointing::UP
@@ -214,14 +216,25 @@ Point3 Triangle::generate_point(int res, int lower_vert, int lower_horz,
                            : vert_result.pointsL[0];
   Point3::lazy_row_points_result horz_result =
       rotation == ico::rotation_method::gnomonic
-          ? Point3::lazy_row_points_gnomonic(lower_horz, left, right, nd,
-                                             constants::lazy_range, lower_horz,
-                                             lower_horz)
-          : Point3::lazy_row_points_quaternion(lower_horz, left, right, nd,
-                                               constants::lazy_range,
-                                               lower_horz, lower_horz);
+          ? Point3::lazy_row_points_gnomonic(lower_horz, left, right,
+                                             this->direction ==
+                                                     tri::pointing::UP
+                                                 ? vert_result.lower_indx
+                                                 : nd - vert_result.lower_indx,
+                                             0, lower_horz, lower_horz)
+          : Point3::lazy_row_points_quaternion(
+                lower_horz, left, right,
+                this->direction == tri::pointing::UP
+                    ? vert_result.lower_indx
+                    : nd - vert_result.lower_indx,
+                0, lower_horz, lower_horz);
 
-  return horz_result.row_points[0];
+  Point3 spherified = horz_result.row_points[0];
+  if (rotation == ico::rotation_method::gnomonic) {
+    spherified.spheriphy();
+  }
+
+  return spherified;
 };
 
 bool Triangle::contains_point(Point3 &point) const {

@@ -42,8 +42,21 @@ public:
   };
 
   /**
+   * @returns point's radous
+   **/
+  long double get_radius();
+  /**
+   * @returns point's latitude
+   **/
+  long double get_lat();
+  /**
+   * @returns point's longitude
+   **/
+  long double get_lon();
+
+  /**
    * VECTOR ARITHMETIC, NOTHING TOO SPECIAL HERE
-   * next section is where the action happens
+   * next sections are where the action happens
    */
 
   /**
@@ -119,6 +132,8 @@ public:
 
   /**
    * generates all points between [above] and [below]
+   * (NOTE: points returned are along line between triangle sides, need to be
+   * spherified)
    * @param above point above
    * @param below point below
    * @param res resolution
@@ -128,6 +143,8 @@ public:
   all_side_points_gnomonic(const Point3 &above, const Point3 &below, int res);
   /**
    * generates only necessary points along right and left triangle sides
+   * (NOTE: points returned are along line between triangle sides, need to be
+   * spherified)
    * @param tri triangle (for referencing points)
    * @param center point # from top to bottom (top is B or C if tri points down,
    * and A if tri points up)
@@ -150,6 +167,8 @@ public:
                             const int lazy_range = constants::lazy_range,
                             int lower = -1, int upper = -1);
   /**
+   * (NOTE: points returned are along line between triangle sides, need to be
+   * spherified)
    * @param left left bound
    * @param right right bound
    * @param num_dividions number of divisions on triangle row
@@ -161,6 +180,8 @@ public:
                                                      int num_divisions);
   /**
    * generates only necessary points between [left] and [right] points
+   * (NOTE: points returned are along line between triangle sides, need to be
+   * spherified)
    * @param center point # from left to right to generate points around
    * @param left left bound
    * @param right right bound
@@ -245,15 +266,16 @@ public:
                              const int lazy_range = constants::lazy_range,
                              int lower = -1, int upper = -1);
 
-private:
+  // TODO: make this modify vector entries instead of copying vector
   /**
    * @param points points to spheriphy
-   * !-> modifies obj */
-  static void spherify1D(std::vector<Point3> &points);
+   * @returns copy of array containing spherified points
+   **/
+  static std::vector<Point3> spherify1D(std::vector<Point3> points);
 
   /**
-   * NOT IMPLEMENED (list functions that haven't been implemented yet & are in
-   * hexmap js)
+   * NOT IMPLEMENED (list of functions that haven't been implemented yet & are
+   * in hexmap js)
    *
    * pointNum(GPoint3 p)
    */
