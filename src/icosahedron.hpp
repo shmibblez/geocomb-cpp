@@ -55,6 +55,11 @@ public:
   static Triangle triangle(const int indx);
 
   /**
+   * @returns randomly generated point
+   **/
+  Point3 random_point() const;
+
+  /**
    * generate point from coordinates (degrees)
    * @param lat latitude
    * @param lon longitude */

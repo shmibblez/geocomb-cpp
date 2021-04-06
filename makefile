@@ -1,10 +1,18 @@
 CC=clang++
 flags=-std=c++17 -stdlib=libc++ -Wall -Wextra -Wreorder-ctor
 
+hash_gen_parse_test: hash_gen_parse_test.o icosahedron.o triangle.o phex.o point3.o
+	mkdir -p builds
+	$(CC) $(flags) -o builds/hash_gen_parse_test hash_gen_parse_test.o icosahedron.o triangle.o phex.o point3.o
+	make clean
+
 hash_test: hash_test.o icosahedron.o triangle.o phex.o point3.o
 	mkdir -p builds
 	$(CC) $(flags) -o builds/hash_test hash_test.o icosahedron.o triangle.o phex.o point3.o
 	make clean
+
+hash_gen_parse_test.o: src/enums.hpp src/icosahedron.hpp src/point3.hpp
+	$(CC) $(flags) -c test/hash_gen_parse_test.cpp
 
 hash_test.o: src/enums.hpp src/icosahedron.hpp src/point3.hpp
 	$(CC) $(flags) -c test/hash_test.cpp

@@ -3,6 +3,8 @@
 #include "point3.hpp"
 #include "triangle.hpp"
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 #include <functional>
 #include <string>
 
@@ -179,6 +181,15 @@ Triangle Icosahedron::triangle(const int indx) {
                                 std::to_string(indx));
   }
   return Icosahedron::triangles()[indx];
+}
+
+Point3 Icosahedron::random_point() const {
+  // seed randomness
+  srand(time(NULL));
+  // random coords, (rand() / RAND_MAX) to get float values too
+  long double r_lat = ((double)rand() / RAND_MAX) * 180.0 - 90.0;
+  long double r_lon = ((double)rand() / RAND_MAX) * 360.0 - 180.0;
+  return this->point_from_coords(r_lat, r_lon);
 }
 
 Point3 Icosahedron::point_from_coords(long double lat, long double lon) const {
