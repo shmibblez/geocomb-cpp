@@ -25,8 +25,8 @@ inline int num_divisions(int resolution) { return resolution * 3; };
 // round 2 nums and check if equal enough
 inline bool equal_enough(long double n1, long double n2, int places = 6) {
   int mult = pow(10, places);
-  long left = round(n1 * mult);
-  long right = round(n2 * mult);
+  long double left = round(n1 * mult);
+  long double right = round(n2 * mult);
   bool result = left == right;
   return result;
 }
