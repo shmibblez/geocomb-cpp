@@ -1,8 +1,8 @@
 # geocomb-cpp
 
-# This the base c++ library
+# This is the base c++ library
 
-so it can be easily used in other platforms with a single core code base
+so it can be easily used in other platforms with a single core code base. Here's the [preview[(https://codesandbox.io/p/sandbox/hex-map-dev-z0qc0?file=%2Fsrc%2Fsketch.ts%3A49%2C24)
 
 the original plan was to use vulkan instead of p5js as I was doing with the typescript version for seeing if everything works, but I'll work on this later since I want to learn vulkan properly, and I'll need to dedicate some time to do that. Instead I'll be working on napi version that relies on this library, geocomb-cpp, and draw everything with p5js.
 
