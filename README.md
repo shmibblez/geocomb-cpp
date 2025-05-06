@@ -1,6 +1,6 @@
 # geocomb-cpp
 
-# This is a c++ version of the npm package hexmap
+# This the base c++ library
 
 so it can be easily used in other platforms with a single core code base
 
@@ -13,7 +13,7 @@ This library used to be called hexmap, but since there are a couple of 2d hexago
 - all geocomb code goes in ./src/
 - ./src/ contains all code hexmap needs to work (no graphics)
 - ./tests/ contains multiple programs (each with with their own main()) that each do different things.
-- that's pretty much it for now, although I was going to learn vulkan, and then draw points, it seems pretty complicated, or something that I'll need to dedicate some time to learn properly, so I'll do that when I have some quality free time. What I'm planning on doing instead is just make node version that uses node napi, and draw with p5js since that's way simpler.
+- that's pretty much it for now.
 
 ## important notes
 
